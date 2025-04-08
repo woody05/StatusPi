@@ -23,6 +23,7 @@ class RPIWS281XManager:
     def __init__(self, led_count=LED_COUNT, led_pin=LED_PIN, led_freq_hz=LED_FREQ_HZ,
                  led_dma=LED_DMA, led_brightness=LED_BRIGHTNESS, led_invert=LED_INVERT,
                  led_channel=LED_CHANNEL):
+        self.debug = False
         self.strip = Adafruit_NeoPixel(led_count, led_pin, led_freq_hz, led_dma,
                                 led_invert, led_brightness, led_channel)
         self.strip.begin()
