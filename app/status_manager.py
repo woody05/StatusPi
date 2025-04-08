@@ -26,7 +26,7 @@ class StatusManager:
     def get_available_statuses(self):
         # Construct the absolute path to the JSON file
         file_path = os.path.join(os.path.dirname(__file__), 'status_settings.json')
-        
+    
         if self.debug:
             print(f"Looking for status_settings.json at: {file_path}")
 
@@ -35,6 +35,7 @@ class StatusManager:
                 data = json.load(file)
                 if self.debug:
                     print(f"Loaded status settings: {data}")
+                # Convert each status dictionary into a Status object
                 return [Status(**status) for status in data.get("statuses", [])]
         except FileNotFoundError:
             if self.debug:
@@ -46,10 +47,15 @@ class StatusManager:
             return []
 
     def get_available_status_by_id(self, status_id):
+        # Retrieve the list of available statuses
         available_statuses = self.get_available_statuses()
-        status = next((s for s in available_statuses if s.id == status_id), None)
+        
+        # Find the status with the matching id
+        status = next((s for s in available_statuses if str(s.id) == str(status_id)), None)
 
-        print(f"Available statuses: {available_statuses}")
+        if self.debug:
+            print(f"Available statuses: {available_statuses}")
+            print(f"Requested status ID: {status_id}, Found: {status}")
 
         if status:
             return status
