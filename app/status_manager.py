@@ -41,6 +41,8 @@ class StatusManager:
         available_statuses = self.get_available_statuses()
         status = next((s for s in available_statuses if s.id == status_id), None)
 
+        print(f"Available statuses: {available_statuses}")
+
         if status:
             return status
         else:
