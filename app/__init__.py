@@ -13,7 +13,7 @@ def create_app():
     from .views import status_view
 
     status_manager.init_app(app)
-    rpi_ws281x_manager.init_app(app)
+    rpi_ws281x_manager.init_app(app, debug=True)
 
     app.register_blueprint(status_view.bp)
 
