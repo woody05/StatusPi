@@ -6,6 +6,7 @@
     <title>{% block title %}Flask App{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap-5.3.5/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='fontawesome-free-6.7.2/css/fontawesome.min.css') }}">
     {% block scripts %}{% endblock %}
 </head>
 <body>
@@ -32,7 +33,8 @@
 </div>
 
 <script src="{{ url_for('static', filename='js/jquery-3.7.1.min.js') }}"></script>
-<script src="{{ url_for('static', filename='/bootstrap-5.3.5/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='bootstrap-5.3.5/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='fontawesome-free-6.7.2/js/fontawesome.min.js') }}"></script>
 
 {% block extra_scripts %}{% endblock %}
 
