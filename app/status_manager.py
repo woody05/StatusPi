@@ -1,4 +1,4 @@
-
+import json
 from flask import current_app
 from app.models.status import Status
 
@@ -17,20 +17,26 @@ class StatusManager:
         try:
             self.status = status
             current_app.rpi_ws281x_manager.set_color(self.status.color)
-        except e:
+        except Exception as e:
             if self.debug:
                 print(f"Error setting status: {e}")
             raise
 
     def get_available_statuses(self):
+        # Read statuses from the JSON file
+        try:
+            with open('status_settings.json', 'r') as file:
+                data = json.load(file)
+                return [Status(**status) for status in data.get("statuses", [])]
+        except FileNotFoundError:
+            if self.debug:
+                print("status_settings.json file not found.")
+            return []
+        except json.JSONDecodeError as e:
+            if self.debug:
+                print(f"Error decoding JSON: {e}")
+            return []
 
-        # TODO: Replace with parsing JSON file for statuses
-        return [
-            Status(id=1, name="Available", color="(0, 255, 0)"),
-            Status(id=2, name="Away", color="(255, 255, 0)"),
-            Status(id=3, name="Busy", color="(255, 0, 0)"),
-        ]
-    
     def get_available_status_by_id(self, status_id):
         available_statuses = self.get_available_statuses()
         status = next((s for s in available_statuses if s.id == status_id), None)
