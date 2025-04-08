@@ -1,4 +1,5 @@
 import json
+import os
 from flask import current_app
 from app.models.status import Status
 
@@ -23,16 +24,21 @@ class StatusManager:
             raise
 
     def get_available_statuses(self):
-        # Read statuses from the JSON file
-        print(self.debug)
+        # Construct the absolute path to the JSON file
+        file_path = os.path.join(os.path.dirname(__file__), 'status_settings.json')
+        
+        if self.debug:
+            print(f"Looking for status_settings.json at: {file_path}")
+
         try:
-            with open('status_settings.json', 'r') as file:
+            with open(file_path, 'r') as file:
                 data = json.load(file)
-                print(f"Loaded status settings: {data}")
+                if self.debug:
+                    print(f"Loaded status settings: {data}")
                 return [Status(**status) for status in data.get("statuses", [])]
         except FileNotFoundError:
             if self.debug:
-                print("status_settings.json file not found.")
+                print(f"status_settings.json file not found at: {file_path}")
             return []
         except json.JSONDecodeError as e:
             if self.debug:
