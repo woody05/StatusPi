@@ -27,6 +27,7 @@ class StatusManager:
         try:
             with open('status_settings.json', 'r') as file:
                 data = json.load(file)
+                print(f"Loaded status settings: {data}")
                 return [Status(**status) for status in data.get("statuses", [])]
         except FileNotFoundError:
             if self.debug:
