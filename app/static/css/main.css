@@ -35,6 +35,6 @@
 
 .status-setting-item {
     border: 1px solid black; /* Solid 1px border */
-    border-radius: 3em; /* Rounded corners with 3em radius */
-    padding: 1em; /* Optional: Add padding for spacing */
+    border-radius: 0.55em; /* Rounded corners with 3em radius */
+    padding: 0.55em 1em; /* Optional: Add padding for spacing */
 }

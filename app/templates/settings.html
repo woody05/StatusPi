@@ -19,14 +19,18 @@
 
 <div class="row mt-5">
     <div class="col-md-12">
-        <h3>Statuses</h3>
+        <div class="d-flex justify-content-between">
+            <h3>Statuses</h3>
+            <button class="btn btn-primary add-status" id="add-status"><i class="fa-solid fa-plus"></i> Status</button>
+        </div>
+        
     </div>
 </div>
 
 <div class="row">
     {% for status in available_statuses %}
     <div class="col-md-12">
-        <div class="d-flex justify-content-left justify-content-between status-setting-item my-3 data-name="{{ status.name }}" data-color="{{ status.color }}" data-status-id="{{ status.id }}"">
+        <div class="d-flex justify-content-left justify-content-between status-setting-item my-1 data-name="{{ status.name }}" data-color="{{ status.color }}" data-status-id="{{ status.id }}"">
             <div class="d-flex">
                 <div>
                     <span class="badge rounded-pill current-status py-1 px-3 ms-1"
