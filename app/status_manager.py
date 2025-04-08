@@ -24,6 +24,7 @@ class StatusManager:
 
     def get_available_statuses(self):
         # Read statuses from the JSON file
+        print(self.debug)
         try:
             with open('status_settings.json', 'r') as file:
                 data = json.load(file)
