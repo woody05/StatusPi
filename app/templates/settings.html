@@ -18,14 +18,25 @@
 </div>
 
 <div class="row">
+    <div class="col-md-12">
+        <h3>Statuses</h3>>
+    </div>
+</div>
+
+<div class="row">
     {% for status in available_statuses %}
     <div class="col-md-12">
         <div class="d-flex justify-content-left justify-content-between py-2">
             <div class="d-flex">
-                <strong>{{ status.name }}</strong><span class="badge rounded-pill current-status py-1 px-3 ms-1"
-                style="color: #000;background-color: rgb{{ status.color }}">{{ status.name }}</span>
+                <div class="w-25">
+                    <strong>{{ status.name }}</strong>
+                </div>
+                <div>
+                    <span class="badge rounded-pill current-status py-1 px-3 ms-1"
+                    style="color: #000;background-color: rgb{{ status.color }}">{{ status.name }}</span>
+                </div>
             </div>
-            <div class="d-flex">
+            <div class="d-flex justify-content-between">
                 <strong>Edit</strong>
                 <strong>Delete</strong>
             </div>
