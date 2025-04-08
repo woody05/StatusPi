@@ -20,6 +20,10 @@
     width: 5%;
 }
 
+.cursor-pointer {
+    cursor: pointer; /* Change cursor to pointer */
+}
+
 .btn-status {
     background-color: transparent; /* Optional: Transparent background */
     color: black; /* Optional: Black text */
@@ -37,4 +41,5 @@
     border: 1px solid black; /* Solid 1px border */
     border-radius: 0.55em; /* Rounded corners with 3em radius */
     padding: 0.55em 1em; /* Optional: Add padding for spacing */
+    background-color: #fff;
 }

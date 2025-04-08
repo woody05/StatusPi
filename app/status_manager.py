@@ -17,7 +17,7 @@ class StatusManager:
     def set_status(self, status):
         try:
             self.status = status
-            current_app.rpi_ws281x_manager.set_color(self.status.color)
+            # current_app.rpi_ws281x_manager.set_color(self.status.color)
         except Exception as e:
             if self.debug:
                 print(f"Error setting status: {e}")
@@ -36,7 +36,7 @@ class StatusManager:
                 if self.debug:
                     print(f"Loaded status settings: {data}")
                 # Convert each status dictionary into a Status object
-                return [Status(**status) for status in data.get("statuses", [])]
+                return [Status(**status) for status in data.get("statuses", None).get("statuses", [])]
         except FileNotFoundError:
             if self.debug:
                 print(f"status_settings.json file not found at: {file_path}")
@@ -61,3 +61,17 @@ class StatusManager:
             return status
         else:
             raise ValueError(f"Status with id {status_id} not found")
+        
+    def update_statuses(self, statuses):
+        if self.debug:
+            print(f"Updating statuses: {statuses}")
+
+        file_path = os.path.join(os.path.dirname(__file__), 'status_settings.json')
+
+        try:
+            with open(file_path, 'w') as file:
+                json.dump({"statuses": statuses}, file)
+        except Exception as e:
+            if self.debug:
+                print(f"Error updating statuses: {e}")
+            raise
