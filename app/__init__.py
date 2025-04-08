@@ -10,11 +10,12 @@ rpi_ws281x_manager = RPIWS281XManager()
 def create_app():
     app = Flask(__name__)
     
-    from .views import status_view
+    from .views import status_view, settings_view
 
     status_manager.init_app(app, debug=True)
     rpi_ws281x_manager.init_app(app, debug=True)
 
     app.register_blueprint(status_view.bp)
+    app.register_blueprint(settings_view.bp)
 
     return app
