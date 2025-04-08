@@ -32,3 +32,9 @@
 .btn-status:hover {
     filter: brightness(0.85); /* Darkens the existing color by 15% */
 }
+
+.status-setting-item {
+    border: 1px solid black; /* Solid 1px border */
+    border-radius: 3em; /* Rounded corners with 3em radius */
+    padding: 1em; /* Optional: Add padding for spacing */
+}
