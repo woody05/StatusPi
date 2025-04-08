@@ -30,7 +30,7 @@
 <div class="row">
     {% for status in available_statuses %}
     <div class="col-md-12">
-        <div class="d-flex justify-content-left justify-content-between status-setting-item my-1 data-name="{{ status.name }}" data-color="{{ status.color }}" data-status-id="{{ status.id }}"">
+        <div id="status-{{ status.id }}" class="d-flex justify-content-left justify-content-between status-setting-item my-1 data-name="{{ status.name }}" data-color="{{ status.color }}" data-status-id="{{ status.id }}"">
             <div class="d-flex">
                 <div>
                     <span class="badge rounded-pill current-status py-1 px-3 ms-1"
