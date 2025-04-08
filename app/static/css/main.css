@@ -1,0 +1,34 @@
+
+.w-100{
+    width: 100% !important;
+}
+
+.w-75{
+    width: 75%;
+}
+
+.w-50{
+    width: 50%;
+}
+.w-25{
+    width: 25%;
+}
+.w-10{
+    width: 10%;
+}
+.w-5{
+    width: 5%;
+}
+
+.btn-status {
+    background-color: transparent; /* Optional: Transparent background */
+    color: black; /* Optional: Black text */
+    transition: all 0.3s ease; /* Smooth hover effect */
+    font-size: 2rem; /* Font size */
+    padding: 2vh 0;
+    font-weight: bold; /* Bold text */
+}
+
+.btn-status:hover {
+    filter: brightness(0.85); /* Darkens the existing color by 15% */
+}
