@@ -13,7 +13,7 @@ class Status {
                 console.log('Status updated successfully:', response);
                 // Optionally update the UI based on the response
 
-                var color = `rgb${ response.status.color }`; // Convert the color string to RGBresponse.status.color; // Get the color from the response
+                var color = response.status.color; // Convert the color string to RGBresponse.status.color; // Get the color from the response
 
                 console.log('Color:', color); // Log the color for debugging
                 var text = response.status.name; // Get the text from the response

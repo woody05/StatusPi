@@ -6,16 +6,18 @@ bp = Blueprint('settings', __name__)
 def settings():
 
     available_statuses = current_app.status_manager.get_available_statuses()
+    brightness = current_app.settings_manager.get_settings().brightness
 
-    return render_template('settings.html', available_statuses=available_statuses)
+    return render_template('settings.html', available_statuses=available_statuses, brightness=brightness)
 
-@bp.route('/settings/update/statuses', methods=['POST'])
+@bp.route('/settings/update/settings', methods=['POST'])
 def update_settings():
 
     data = request.get_json()
 
     try:
-        current_app.status_manager.update_statuses(data)
+        current_app.settings_manager.update_settings(data)
+        current_app.status_manager.set_brightness(data.get("brightness", 25))
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 

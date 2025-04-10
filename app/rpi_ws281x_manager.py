@@ -9,6 +9,8 @@ import time
 from rpi_ws281x import Adafruit_NeoPixel, Color
 import argparse
 
+from app import settings_manager
+
 # LED strip configuration:
 LED_COUNT = 32       # Number of LED pixels.
 LED_PIN = 18          # GPIO pin connected to the pixels (18 uses PWM!).
@@ -24,15 +26,23 @@ class RPIWS281XManager:
                  led_dma=LED_DMA, led_brightness=LED_BRIGHTNESS, led_invert=LED_INVERT,
                  led_channel=LED_CHANNEL):
         self.debug = False
+        self.settings_manager = settings_manager  # Injected dependency
         self.strip = Adafruit_NeoPixel(led_count, led_pin, led_freq_hz, led_dma,
                                 led_invert, led_brightness, led_channel)
         self.strip.begin()
 
-    def init_app(self, app, **kwargs):
+    def init_app(self, settings_manager, app, **kwargs):
         app.rpi_ws281x_manager = self
         self.debug = kwargs.get('debug', self.debug)
+        self.settings_manager = settings_manager
 
+        self.set_brightness(settings_manager.get_settings().brightness)
+        
         self.set_color('rgb(255, 255, 255)')  # Set initial color to black (off)
+        self.strip.show()
+
+    def set_brightness(self, brightness):
+        self.strip.setBrightness(brightness)
         self.strip.show()
 
     def set_color(self, color):

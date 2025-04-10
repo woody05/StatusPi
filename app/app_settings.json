@@ -1,8 +1,9 @@
 {
+    "brightness": "17",
     "statuses": [
         {
             "id": 1,
-            "name": " Available",
+            "name": "Available",
             "color": "rgb(0, 255, 0)"
         },
         {
@@ -16,7 +17,7 @@
             "color": "rgb(255, 0, 0)"
         },
         {
-            "id": 5,
+            "id": 4,
             "name": "Fucking",
             "color": "rgb(220, 138, 221)"
         }

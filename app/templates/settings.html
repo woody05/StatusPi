@@ -8,7 +8,24 @@
 <div class="mb-2">
     <div class="row">
         <div class="col-md-12">
-            <h1>Settings</h1>
+            <div class="d-flex justify-content-between">
+                <h1>Settings</h1>
+                <div>
+                    <button class="btn btn-success save-status ms-1" id="save-statuses"><i
+                    class="fa-solid fa-floppy-disk"></i></button>
+                </div>
+            </div>        
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Slider Control -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h3>Brightness</h3>
+        <div class="d-flex align-items-center">
+            <input type="range" class="form-range" id="brightnessSlider" min="0" max="225" step="1" value="{{ brightness }}">
+            <span class="ms-3" id="brightnessValue">{{ brightness }}</span>
         </div>
     </div>
 </div>
@@ -22,8 +39,6 @@
                     data-bs-target="#addStatusModal">
                     <i class="fa-solid fa-plus"></i>
                 </button>
-                <button class="btn btn-success save-status ms-1" id="save-statuses"><i
-                        class="fa-solid fa-floppy-disk"></i></button>
             </div>
         </div>
 
@@ -321,14 +336,17 @@
     });
 
     $('#save-statuses').on('click', function () {
-        var statuses = [];
+        let settings = {
+            brightness: $('#brightnessSlider').val(),
+            statuses: []
+        };
 
         $('.status-setting-item').each(function () {
             var id = $(this).data('status-id');
             var name = $(this).data('name');
             var color = $(this).data('color');
 
-            statuses.push({
+            settings.statuses.push({
                 id: id,
                 name: name,
                 color: color
@@ -336,10 +354,10 @@
         });
 
         $.ajax({
-            url: '/settings/update/statuses', // Endpoint to call
+            url: '/settings/update/settings', // Endpoint to call
             type: 'POST', // HTTP method
             contentType: 'application/json', // Sending JSON data
-            data: JSON.stringify(statuses), // Data to send
+            data: JSON.stringify(settings), // Data to send
             success: function (response) {
                 console.log('Status updated successfully:', response);
                 // Optionally update the UI based on the response
@@ -401,6 +419,11 @@
             $(this).attr('id', 'status-' + id);
         });
     }
+
+    $('#brightnessSlider').on('input', function () {
+        const value = $(this).val();
+        $('#brightnessValue').text(`${value}%`);
+    });
 
 </script>
 {% endblock %}
