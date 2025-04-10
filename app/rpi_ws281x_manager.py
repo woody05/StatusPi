@@ -41,7 +41,7 @@ class RPIWS281XManager:
         self.set_brightness(self.settings_manager.get_settings().brightness)
 
     def set_brightness(self, brightness):
-        self.strip.setBrightness(brightness)
+        self.strip.setBrightness(int(brightness))
         self.strip.begin()
         self.strip.show()
 
