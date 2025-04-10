@@ -37,12 +37,11 @@ class RPIWS281XManager:
         self.settings_manager = settings_manager
 
         self.set_color('rgb(255, 255, 255)')  # Set initial color to black (off)
-        self.strip.show()
         self.set_brightness(self.settings_manager.get_settings().brightness)
+        self.strip.show()
 
     def set_brightness(self, brightness):
         self.strip.setBrightness(int(brightness))
-        self.strip.begin()
         self.strip.show()
 
     def set_color(self, color):
