@@ -1,1 +1,21 @@
-{"statuses": {"statuses": [{"id": 1, "name": "                   Available", "color": "(0, 255, 0)"}, {"id": 2, "name": "                   Away", "color": "(255, 255, 0)"}, {"id": 3, "name": "                   Busy", "color": "(255, 0, 0)"}]}}
+{
+    "statuses": {
+        "statuses": [
+            {
+                "id": 1,
+                "name": "Available",
+                "color": "rgb(0, 255, 0)"
+            },
+            {
+                "id": 2,
+                "name": "Away",
+                "color": "rgb(255, 255, 0)"
+            },
+            {
+                "id": 3,
+                "name": "Busy",
+                "color": "rgb(255, 0, 0)"
+            }
+        ]
+    }
+}
