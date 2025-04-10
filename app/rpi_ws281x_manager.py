@@ -40,6 +40,10 @@ class RPIWS281XManager:
         #TODO: find cleaner way to convert string color to Color object
         if isinstance(color, str):
             color = color.strip("()").strip("rgb").split(",")
+
+            if self.debug:
+                print(f"Color string: {color}")
+
             red = int(color[0])
             green = int(color[1])
             blue = int(color[2])
