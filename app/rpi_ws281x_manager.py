@@ -6,7 +6,7 @@
 # various animations on a strip of NeoPixels.
 
 import time
-from rpi_ws281x import Adafruit_NeoPixel, Color
+from rpi_ws281x import PixelStrip, Color
 import argparse
 
 from app import settings_manager
@@ -27,7 +27,7 @@ class RPIWS281XManager:
                  led_channel=LED_CHANNEL, settings_manager=None):
         self.debug = False
         self.settings_manager = settings_manager  # Injected dependency
-        self.strip = Adafruit_NeoPixel(led_count, led_pin, led_freq_hz, led_dma,
+        self.strip = PixelStrip(led_count, led_pin, led_freq_hz, led_dma,
                                 led_invert, led_brightness, led_channel)
         self.strip.begin()
 
