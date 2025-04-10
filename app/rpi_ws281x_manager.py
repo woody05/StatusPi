@@ -44,9 +44,9 @@ class RPIWS281XManager:
             if self.debug:
                 print(f"Color string: {color}")
 
-            red = int(color[0].trim())
-            green = int(color[1].trim())
-            blue = int(color[2].trim())
+            red = int(color[0].strip())
+            green = int(color[1].strip())
+            blue = int(color[2].strip())
             
         color = Color(red, green, blue)
 
