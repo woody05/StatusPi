@@ -339,7 +339,7 @@
             url: '/settings/update/statuses', // Endpoint to call
             type: 'POST', // HTTP method
             contentType: 'application/json', // Sending JSON data
-            data: JSON.stringify({ statuses: statuses }), // Data to send
+            data: JSON.stringify(statuses), // Data to send
             success: function (response) {
                 console.log('Status updated successfully:', response);
                 // Optionally update the UI based on the response

@@ -36,7 +36,7 @@ class StatusManager:
                 if self.debug:
                     print(f"Loaded status settings: {data}")
                 # Convert each status dictionary into a Status object
-                return [Status(**status) for status in data.get("statuses", None).get("statuses", [])]
+                return [Status(**status) for status in data.get("statuses", [])]
         except FileNotFoundError:
             if self.debug:
                 print(f"status_settings.json file not found at: {file_path}")
