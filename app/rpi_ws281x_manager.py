@@ -24,7 +24,7 @@ LED_CHANNEL = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 class RPIWS281XManager:
     def __init__(self, led_count=LED_COUNT, led_pin=LED_PIN, led_freq_hz=LED_FREQ_HZ,
                  led_dma=LED_DMA, led_brightness=LED_BRIGHTNESS, led_invert=LED_INVERT,
-                 led_channel=LED_CHANNEL):
+                 led_channel=LED_CHANNEL, settings_manager=None):
         self.debug = False
         self.settings_manager = settings_manager  # Injected dependency
         self.strip = Adafruit_NeoPixel(led_count, led_pin, led_freq_hz, led_dma,
@@ -37,7 +37,7 @@ class RPIWS281XManager:
         self.settings_manager = settings_manager
 
         self.set_brightness(settings_manager.get_settings().brightness)
-        
+
         self.set_color('rgb(255, 255, 255)')  # Set initial color to black (off)
         self.strip.show()
 
