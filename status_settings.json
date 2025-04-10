@@ -1,1 +1,31 @@
-{"statuses": {"statuses": [{"id": 1, "name": " Available", "color": "(0, 255, 0)"}, {"id": 2, "name": " Away", "color": "(255, 255, 0)"}, {"id": 3, "name": " Busy", "color": "(255, 0, 0)"}, {"id": 4, "name": " Party", "color": "(128, 0, 128)"}, {"id": 5, "name": "Fucking", "color": "rgb(220, 138, 221)"}]}}
+{
+    "statuses": {
+        "statuses": [
+            {
+                "id": 1,
+                "name": " Available",
+                "color": "rgb(0, 255, 0)"
+            },
+            {
+                "id": 2,
+                "name": " Away",
+                "color": "rgb(255, 255, 0)"
+            },
+            {
+                "id": 3,
+                "name": " Busy",
+                "color": "rgb(255, 0, 0)"
+            },
+            {
+                "id": 4,
+                "name": " Party",
+                "color": "rgb(128, 0, 128)"
+            },
+            {
+                "id": 5,
+                "name": "Fucking",
+                "color": "rgb(220, 138, 221)"
+            }
+        ]
+    }
+}
