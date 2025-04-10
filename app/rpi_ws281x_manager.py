@@ -31,7 +31,7 @@ class RPIWS281XManager:
                                 led_invert, led_brightness, led_channel)
         self.strip.begin()
 
-    def init_app(self, settings_manager, app, **kwargs):
+    def init_app(self, app, settings_manager, **kwargs):
         app.rpi_ws281x_manager = self
         self.debug = kwargs.get('debug', self.debug)
         self.settings_manager = settings_manager
