@@ -42,7 +42,7 @@ class RPIWS281XManager:
         self.strip.show()
 
     def set_brightness(self, brightness):
-        updated_strip = PixelStrip(self.strip.numPixels(), self.strip.pin, self.strip.freq, self.strip.dma,
+        updated_strip = PixelStrip(self.strip.numPixels(), LED_PIN, self.strip.freq, self.strip.dma,
                                 self.strip.invert, brightness, self.strip.channel)
         self.strip = updated_strip
         self.strip.show()
