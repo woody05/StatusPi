@@ -32,7 +32,7 @@ class RPIWS281XManager:
         app.rpi_ws281x_manager = self
         self.debug = kwargs.get('debug', self.debug)
 
-        self.set_color('rgb(0, 0, 0)')  # Set initial color to black (off)
+        self.set_color('rgb(255, 255, 255)')  # Set initial color to black (off)
         self.strip.show()
 
     def set_color(self, color):
