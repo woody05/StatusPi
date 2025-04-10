@@ -15,8 +15,9 @@ def create_app():
     from .views import status_view, settings_view
 
     settings_manager.init_app(app, debug=True)
-    status_manager.init_app(app, settings_manager, debug=True)
-    rpi_ws281x_manager.init_app(app, settings_manager, debug=True)
+    
+    status_manager.init_app(app, app.settings_manager, debug=True)
+    rpi_ws281x_manager.init_app(app, app.settings_manager, debug=True)
 
     app.register_blueprint(status_view.bp)
     app.register_blueprint(settings_view.bp)
