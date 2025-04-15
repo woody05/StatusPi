@@ -5,7 +5,7 @@ from flask import current_app
 from app.models.status import Status
 
 BLANK_COLOR = 'rgb(0, 0, 0)'  # Default color for blank status
-FLASH_INTERVAL = 1  # Interval in seconds for flashing status
+FLASH_INTERVAL = 0.5  # Interval in seconds for flashing status
 
 class StatusManager:
     def __init__(self, settings_manager=None):
