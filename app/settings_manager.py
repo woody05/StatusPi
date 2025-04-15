@@ -70,8 +70,6 @@ class SettingsManager:
 
         file_path = os.path.join(os.path.dirname(__file__), 'app_settings.json')
 
-        current_settings = self.get_settings()
-
         try:
             # Ensure settings is an instance of AppSettings
             if not isinstance(settings, AppSettings):
