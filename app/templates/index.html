@@ -50,6 +50,17 @@
 {% block extra_scripts %}
 <script>
 
+    const IS_FLASHING = {{ is_flashing | tojson }};
+
+    $(function () {
+        // Initialize the radio buttons based on IS_FLASHING
+        if (IS_FLASHING) {
+            $('#mode-flashing').prop('checked', true);
+        } else {
+            $('#mode-solid').prop('checked', true);
+        }
+    });
+
     // function to update the status
     $('.update-status').on('click', function () {
         var statusId = $(this).data('status-id');

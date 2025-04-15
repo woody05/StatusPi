@@ -7,7 +7,9 @@ def index():
     status = current_app.status_manager.status
     available_statuses = current_app.status_manager.get_available_statuses()
 
-    return render_template('index.html', status=status, available_statuses=available_statuses)
+    is_flashing = current_app.status_manager.is_flashing
+
+    return render_template('index.html', status=status, available_statuses=available_statuses, is_flashing=is_flashing)
 
 @bp.route('/status', methods=['GET', 'POST'])
 def status():
