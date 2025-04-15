@@ -14,4 +14,6 @@
 /app/.pytest_cache
 /app/.mypy_cache
 
+/app/models/__pycache__/
+
 app/app_settings.json
