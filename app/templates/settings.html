@@ -24,8 +24,8 @@
     <div class="col-md-12">
         <h3>Brightness</h3>
         <div class="d-flex align-items-center">
-            <input type="range" class="form-range" id="brightnessSlider" min="0" max="225" step="1" value="{{ brightness }}">
-            <span class="ms-3" id="brightnessValue">{{ brightness }}</span>
+            <input type="range" class="form-range" id="brightnessSlider" min="0" max="225" step="1" value="{{ settings.brightness }}">
+            <span class="ms-3" id="brightnessValue">{{ settings.brightness }}</span>
         </div>
     </div>
 </div>
@@ -184,6 +184,8 @@
 {% block extra_scripts %}
 <script>
 
+    const SETTINGS_VERSION = {{ settings.version | tojson }};
+
     $(document).ready(function () {
         // Make the divs inside the container sortable
         $('.status-setting-item-container').sortable({
@@ -338,7 +340,8 @@
     $('#save-statuses').on('click', function () {
         let settings = {
             brightness: $('#brightnessSlider').val(),
-            statuses: []
+            statuses: [],
+            version: SETTINGS_VERSION
         };
 
         $('.status-setting-item').each(function () {
@@ -422,7 +425,7 @@
 
     $('#brightnessSlider').on('input', function () {
         const value = $(this).val();
-        $('#brightnessValue').text(`${value}%`);
+        $('#brightnessValue').text(`${value}`);
     });
 
 </script>

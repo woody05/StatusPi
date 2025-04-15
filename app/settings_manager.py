@@ -1,15 +1,24 @@
 import json
 import os
-from flask import current_app
 from app.models.app_settings import AppSettings
 from app.models.status import Status
+
+#TODO: Add a version to the settings file
+DEFAULT_SETTINGS_V1 = AppSettings(
+            brightness=20,
+            statuses=[
+                Status(id=1, name="Available", color="rgb(0, 255, 0)"),
+                Status(id=2, name="Away", color="rgb(255, 255, 0)"),
+                Status(id=3, name="Busy", color="rgb(255, 0, 0)"),
+            ],
+            version=1
+        )
 
 class SettingsManager:
     def __init__(self):
         self.debug = False
     
     def init_app(self, app, **kwargs):
-        print("Initializing SettingsManager")
         app.settings_manager = self
         self.debug = kwargs.get('debug', self.debug)
 
@@ -33,13 +42,27 @@ class SettingsManager:
                 
                 return app_settings
         except FileNotFoundError:
+
             if self.debug:
                 print(f"app_settings.json file not found at: {file_path}")
-            return []
+
+            # If the file is not found, create it with default settings
+            if self.debug:
+                print("Creating default settings file.")
+
+            self.update_settings(DEFAULT_SETTINGS_V1)
+
+            return DEFAULT_SETTINGS_V1
+        
         except json.JSONDecodeError as e:
             if self.debug:
                 print(f"Error decoding JSON: {e}")
-            return []
+
+            # If the JSON is corrupted, create a backup and return default settings
+            self._create_backup_of_corrupted_settings(file_path)
+
+            # Return default settings
+            return DEFAULT_SETTINGS_V1
         
     def update_settings(self, settings):
         if self.debug:
@@ -47,10 +70,44 @@ class SettingsManager:
 
         file_path = os.path.join(os.path.dirname(__file__), 'app_settings.json')
 
+        current_settings = self.get_settings()
+
         try:
+            # Ensure settings is an instance of AppSettings
+            if not isinstance(settings, AppSettings):
+                settings = self._convert_to_app_settings(settings)
+
+            settings_dict = settings.to_dict()
+
+            if self.debug:
+                print(f"Settings to save: {settings_dict}")
+
             with open(file_path, 'w') as file:
-                json.dump(settings, file)
+                json.dump(settings_dict, file)
         except Exception as e:
             if self.debug:
-                print(f"Error updating statuses: {e}")
+                print(f"Error updating settings: {e}")
             raise
+
+    def _convert_to_app_settings(self, settings):
+        try:
+            return AppSettings(
+                brightness=settings["brightness"],
+                statuses=[Status(**status) for status in settings["statuses"]],
+                version=settings["version"]
+            )
+        except KeyError as e:
+            raise ValueError(f"Missing required setting: {e}")
+        except Exception as e:
+            raise ValueError(f"Failed to parse settings: {e}")
+
+    def _create_backup_of_corrupted_settings(self, file_path):
+        # Make a backup of the bad JSON file
+        backup_file_path = file_path + ".corrupted_settings_backup"
+        try:
+            os.rename(file_path, backup_file_path)
+            if self.debug:
+                print(f"Corrupted settings file backed up to: {backup_file_path}")
+        except Exception as backup_error:
+            if self.debug:
+                print(f"Failed to create backup of corrupted settings file: {backup_error}")

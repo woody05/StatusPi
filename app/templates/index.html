@@ -18,6 +18,22 @@
     </div>
 </div>
 
+<div class="mb-3">
+    <div class="row">
+        <div class="col-md-12">
+            <p><strong>Mode:</strong></p>
+            <div class="btn-group" role="group" aria-label="Mode selection">
+                <input type="radio" class="btn-check" name="mode" id="mode-flashing" value="flashing"
+                    autocomplete="off">
+                <label class="btn btn-outline-primary" for="mode-flashing">Flashing</label>
+
+                <input type="radio" class="btn-check" name="mode" id="mode-solid" value="solid" autocomplete="off"
+                    checked>
+                <label class="btn btn-outline-primary" for="mode-solid">Solid</label>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="row">
     {% for status in available_statuses %}
     <div class="col-md-4">
@@ -41,6 +57,24 @@
         Status.updateStatus('.current-status', statusId);
     });
     // end function to update the status
+
+    // function to update the mode
+    $('input[name="mode"]').on('change', function () {
+        var mode = $(this).val();
+
+        is_flashing = false
+
+        if (mode == 'flashing') {
+            is_flashing = true;
+        }
+
+        if (mode == 'solid') {
+            is_flashing = false;
+        }
+
+        Status.updateFlashingStatus(is_flashing);
+    });
+    // end function to update the mode
 
 </script>
 {% endblock %}

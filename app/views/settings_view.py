@@ -6,9 +6,9 @@ bp = Blueprint('settings', __name__)
 def settings():
 
     available_statuses = current_app.status_manager.get_available_statuses()
-    brightness = current_app.settings_manager.get_settings().brightness
+    settings = current_app.settings_manager.get_settings()
 
-    return render_template('settings.html', available_statuses=available_statuses, brightness=brightness)
+    return render_template('settings.html',available_statuses = available_statuses, settings = settings)
 
 @bp.route('/settings/update/settings', methods=['POST'])
 def update_settings():

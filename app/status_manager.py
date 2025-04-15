@@ -1,13 +1,18 @@
 import json
 import os
+import time
 from flask import current_app
 from app.models.status import Status
+
+BLANK_COLOR = 'rgb(0, 0, 0)'  # Default color for blank status
+FLASH_INTERVAL = 1  # Interval in seconds for flashing status
 
 class StatusManager:
     def __init__(self, settings_manager=None):
         self.status = None
         self.debug = False
         self.settings_manager = settings_manager  # Injected dependency
+        self.is_flashing = False
 
     def init_app(self, app, settings_manager, **kwargs):
         app.status_manager = self
@@ -20,7 +25,7 @@ class StatusManager:
     def set_status(self, status):
         try:
             self.status = status
-            current_app.rpi_ws281x_manager.set_color(self.status.color)
+            # current_app.rpi_ws281x_manager.set_color(self.status.color)
         except Exception as e:
             if self.debug:
                 print(f"Error setting status: {e}")
@@ -57,3 +62,28 @@ class StatusManager:
             if self.debug:
                 print(f"Error setting brightness: {e}")
             raise
+
+    def set_flashing_status(self):
+        try:
+            self.is_flashing = True
+            while self.is_flashing:
+                # Flashing logic here
+
+                if self.debug:
+                    print(f"Flashing status: {self.status.color}")
+
+                current_app.rpi_ws281x_manager.set_color(BLANK_COLOR)
+
+                time.sleep(FLASH_INTERVAL)
+
+                current_app.rpi_ws281x_manager.set_color(self.status.color)
+
+                time.sleep(FLASH_INTERVAL)
+
+        except Exception as e:
+            if self.debug:
+                print(f"Error setting flashing status: {e}")
+            raise
+
+    def stop_flashing(self):
+        self.is_flashing = False
