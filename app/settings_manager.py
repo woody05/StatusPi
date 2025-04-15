@@ -39,6 +39,8 @@ class SettingsManager:
                 app_settings = AppSettings()
                 app_settings.brightness = data.get("brightness", 0)
                 app_settings.statuses = [Status(**status) for status in data.get("statuses", [])]
+                app_settings.version = data.get("version", 1)
+                app_settings.flashing_intervals = float(data.get("flashing_intervals", 0.5))
                 
                 return app_settings
         except FileNotFoundError:
@@ -92,7 +94,8 @@ class SettingsManager:
             return AppSettings(
                 brightness=settings["brightness"],
                 statuses=[Status(**status) for status in settings["statuses"]],
-                version=settings["version"]
+                version=settings["version"],
+                flashing_intervals=settings["flashing_intervals"]
             )
         except KeyError as e:
             raise ValueError(f"Missing required setting: {e}")

@@ -30,7 +30,18 @@
     </div>
 </div>
 
-<div class="row mt-5">
+<!-- Flashing Interval -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h3>Flashing Intervals (Seconds)</h3>
+        <div class="d-flex align-items-center">
+            <input type="number" class="form-control" id="flashingIntervals" min="0.5" max="60" step="1" value="{{ settings.flashing_intervals }}">
+        </div>
+    </div>
+</div>
+<!-- End Flashing Interval -->
+
+<div class="row mt-4">
     <div class="col-md-12">
         <div class="d-flex justify-content-between">
             <h3>Statuses</h3>
@@ -338,10 +349,12 @@
     });
 
     $('#save-statuses').on('click', function () {
+        var flashing_intervals = $('#flashingIntervals').val();
         let settings = {
             brightness: $('#brightnessSlider').val(),
             statuses: [],
-            version: SETTINGS_VERSION
+            version: SETTINGS_VERSION,
+            flashing_intervals: flashing_intervals
         };
 
         $('.status-setting-item').each(function () {

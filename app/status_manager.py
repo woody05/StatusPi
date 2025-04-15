@@ -5,7 +5,7 @@ from flask import current_app
 from app.models.status import Status
 
 BLANK_COLOR = 'rgb(0, 0, 0)'  # Default color for blank status
-FLASH_INTERVAL = 0.5  # Interval in seconds for flashing status
+DEFAULT_FLASH_INTERVAL = 0.5  # Interval in seconds for flashing status
 
 class StatusManager:
     def __init__(self, settings_manager=None):
@@ -64,6 +64,12 @@ class StatusManager:
             raise
 
     def set_flashing_status(self):
+
+        flashing_intervals = self.settings_manager.get_settings().flashing_intervals
+
+        if not flashing_intervals:
+            flashing_intervals = DEFAULT_FLASH_INTERVAL
+
         try:
             self.is_flashing = True
             while self.is_flashing:
@@ -74,11 +80,11 @@ class StatusManager:
 
                 current_app.rpi_ws281x_manager.set_color(BLANK_COLOR)
 
-                time.sleep(FLASH_INTERVAL)
+                time.sleep(flashing_intervals)
 
                 current_app.rpi_ws281x_manager.set_color(self.status.color)
 
-                time.sleep(FLASH_INTERVAL)
+                time.sleep(flashing_intervals)
 
         except Exception as e:
             if self.debug:
