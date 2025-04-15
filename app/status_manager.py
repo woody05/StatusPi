@@ -25,7 +25,7 @@ class StatusManager:
     def set_status(self, status):
         try:
             self.status = status
-            # current_app.rpi_ws281x_manager.set_color(self.status.color)
+            current_app.rpi_ws281x_manager.set_color(self.status.color)
         except Exception as e:
             if self.debug:
                 print(f"Error setting status: {e}")
