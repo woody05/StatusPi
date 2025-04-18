@@ -44,4 +44,21 @@ class Status {
             }
         });
     }
+
+    static changeMode(mode) {
+        $.ajax({
+            url: '/change/mode', // Endpoint to call
+            type: 'POST', // HTTP method
+            contentType: 'application/json', // Sending JSON data
+            data: JSON.stringify({ mode: mode }), // Data to send
+            success: function(response) {
+                console.log('Mode updated successfully:', response);
+
+            },
+            error: function(xhr, status, error) {
+                console.error('Error updating status:', error);
+                // Optionally handle errors
+            }
+        });
+    }
 }

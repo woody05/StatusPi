@@ -50,11 +50,11 @@
 {% block extra_scripts %}
 <script>
 
-    const IS_FLASHING = {{ is_flashing | tojson }};
+    const MODE = {{ mode.name | tojson }};
 
     $(function () {
         // Initialize the radio buttons based on IS_FLASHING
-        if (IS_FLASHING) {
+        if (MODE == 'FLASHING') {
             $('#mode-flashing').prop('checked', true);
         } else {
             $('#mode-solid').prop('checked', true);
@@ -73,17 +73,7 @@
     $('input[name="mode"]').on('change', function () {
         var mode = $(this).val();
 
-        is_flashing = false
-
-        if (mode == 'flashing') {
-            is_flashing = true;
-        }
-
-        if (mode == 'solid') {
-            is_flashing = false;
-        }
-
-        Status.updateFlashingStatus(is_flashing);
+        Status.changeMode(mode);
     });
     // end function to update the mode
 

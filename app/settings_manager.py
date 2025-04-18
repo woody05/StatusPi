@@ -1,7 +1,10 @@
 import json
 import os
+
+from flask import current_app
 from app.models.app_settings import AppSettings
 from app.models.status import Status
+from app.status_manager import Mode
 
 #TODO: Add a version to the settings file
 DEFAULT_SETTINGS_V1 = AppSettings(
@@ -84,6 +87,15 @@ class SettingsManager:
 
             with open(file_path, 'w') as file:
                 json.dump(settings_dict, file)
+
+            # I want to update the status flashing if the flashing intervals have changed
+            current_status_mode = current_app.status_manager.mode
+
+            if current_status_mode == Mode.FLASHING:
+                if self.debug:
+                    print(f"Updating flashing intervals to: {settings.flashing_intervals}")
+                current_app.status_manager.flashing_intervals = int(settings.flashing_intervals)
+
         except Exception as e:
             if self.debug:
                 print(f"Error updating settings: {e}")
