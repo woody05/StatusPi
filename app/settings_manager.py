@@ -94,7 +94,7 @@ class SettingsManager:
             if current_status_mode == Mode.FLASHING:
                 if self.debug:
                     print(f"Updating flashing intervals to: {settings.flashing_intervals}")
-                current_app.status_manager.flashing_intervals = int(settings.flashing_intervals)
+                current_app.status_manager.flashing_intervals = float(settings.flashing_intervals)
 
         except Exception as e:
             if self.debug:
