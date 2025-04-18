@@ -109,8 +109,12 @@ class RPIWS281XManager:
                 print(f"Current LED: {current_led}")
 
             leds_to_light.append(current_led)
-            current_led += 8
+            
+            current_led += 9
 
-            self.strip.setPixelColor(current_led, color)
+            leds_to_light.append(current_led)
         
+        for led in leds_to_light:
+            self.strip.setPixelColor(led, color)
+
         self.strip.show()
