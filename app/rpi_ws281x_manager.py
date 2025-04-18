@@ -109,7 +109,7 @@ class RPIWS281XManager:
             [7, 15, 23, 31]
         ]
 
-        for line in line_number:
+        for line in range(line_number):
             row = led_rows[line]
             for i in row:
                 self.strip.setPixelColor(i, color)
