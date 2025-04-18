@@ -110,7 +110,7 @@ class RPIWS281XManager:
 
             leds_to_light.append(current_led)
             
-            current_led += 9
+            current_led += 8
 
             leds_to_light.append(current_led)
         
