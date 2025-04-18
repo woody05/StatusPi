@@ -131,8 +131,11 @@ class StatusManager:
 
         number_of_leds = current_app.rpi_ws281x_manager.strip.numPixels()
 
+        current_app.rpi_ws281x_manager.set_color(BLANK_COLOR)
+
         while self.mode == Mode.WAVE:
-            for i in range(number_of_leds):
-                current_app.rpi_ws281x_manager.set_color_one_led_at_a_time(self.status.color, i)
+            for i in range(8):
+                current_app.rpi_ws281x_manager.set_status_wave(self.status.color, i)
                 time.sleep(1)
+            time.sleep(1)
             current_app.rpi_ws281x_manager.set_color(BLANK_COLOR)

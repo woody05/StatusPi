@@ -78,9 +78,35 @@ class RPIWS281XManager:
             
         color = Color(red, green, blue)
 
-        if led_index > self.strip.numPixels():
+        if led_index - 1 > self.strip.numPixels():
             return
 
         for i in range(led_index):
             self.strip.setPixelColor(i, color)
             self.strip.show()
+
+    def set_status_wave(self, color, line_number):
+        if isinstance(color, str):
+            color = color.replace("rgb", "").strip("()").split(",")
+
+            if self.debug:
+                print(f"Color string: {color}")
+
+            red = int(color[0].strip())
+            green = int(color[1].strip())
+            blue = int(color[2].strip())
+            
+        color = Color(red, green, blue)
+
+        leds_to_light = []
+
+        current_led = 0
+
+        for number in range(line_number):
+            current_led = number * line_number
+            leds_to_light.append(current_led)
+            current_led += 8
+
+            self.strip.setPixelColor(current_led, color)
+        
+        self.strip.show()
