@@ -51,13 +51,6 @@ class StatusManager:
         elif mode == Mode.SOLID:
             self.mode = Mode.SOLID
 
-            sleep_time = self.flashing_intervals
-
-            if self.wave_intervals > sleep_time:
-                sleep_time = self.wave_intervals
-                
-            time.sleep(sleep_time)
-        
             self.set_status(self.status)
 
     def get_available_statuses(self):
@@ -125,6 +118,8 @@ class StatusManager:
                 current_app.rpi_ws281x_manager.set_color(self.status.color)
 
                 time.sleep(self.flashing_intervals)
+                
+            self.set_status_mode(self.mode)
 
         except Exception as e:
             if self.debug:
@@ -140,8 +135,6 @@ class StatusManager:
 
         self.mode = Mode.WAVE
 
-        number_of_leds = current_app.rpi_ws281x_manager.strip.numPixels()
-
         current_app.rpi_ws281x_manager.set_color(BLANK_COLOR)
 
         while self.mode == Mode.WAVE:
@@ -151,3 +144,5 @@ class StatusManager:
             for i in range(9):
                 current_app.rpi_ws281x_manager.set_status_wave(BLANK_COLOR, i)
                 time.sleep(self.wave_intervals)
+
+        self.set_status_mode(self.mode)
