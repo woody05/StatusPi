@@ -104,6 +104,10 @@ class RPIWS281XManager:
 
         for number in range(line_number):
             current_led = number * line_number
+
+            if self.debug:
+                print(f"Current LED: {current_led}")
+
             leds_to_light.append(current_led)
             current_led += 8
 
