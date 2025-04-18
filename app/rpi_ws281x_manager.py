@@ -66,6 +66,18 @@ class RPIWS281XManager:
 
     def set_color_one_led_at_a_time(self, color, led_index):
 
+        if isinstance(color, str):
+            color = color.replace("rgb", "").strip("()").split(",")
+
+            if self.debug:
+                print(f"Color string: {color}")
+
+            red = int(color[0].strip())
+            green = int(color[1].strip())
+            blue = int(color[2].strip())
+            
+        color = Color(red, green, blue)
+
         if led_index > self.strip.numPixels():
             return
 
