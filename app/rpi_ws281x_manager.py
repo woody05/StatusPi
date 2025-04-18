@@ -98,23 +98,20 @@ class RPIWS281XManager:
             
         color = Color(red, green, blue)
 
-        leds_to_light = []
+        led_rows = [
+            [0, 8, 16, 24],
+            [1, 9, 17, 25],
+            [2, 10, 18, 26],
+            [3, 11, 19, 27],
+            [4, 12, 20, 28],
+            [5, 13, 21, 29],
+            [6, 14, 22, 30],
+            [7, 15, 23, 31]
+        ]
 
-        current_led = 0
-
-        for number in range(line_number):
-            current_led = number * line_number
-
-            if self.debug:
-                print(f"Current LED: {current_led}")
-
-            leds_to_light.append(current_led)
-            
-            current_led += 8
-
-            leds_to_light.append(current_led)
-        
-        for led in leds_to_light:
-            self.strip.setPixelColor(led, color)
+        for line in line_number:
+            row = led_rows[line]
+            for i in row:
+                self.strip.setPixelColor(i, color)
 
         self.strip.show()
