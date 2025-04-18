@@ -7,6 +7,7 @@ from app.models.status import Status
 
 BLANK_COLOR = 'rgb(0, 0, 0)'  # Default color for blank status
 DEFAULT_FLASH_INTERVAL = 0.5  # Interval in seconds for flashing status
+DEFAULT_WAVE_INTERVAL = 0.08  # Interval in seconds for wave status
 
 class Mode(Enum):
     SOLID = 1
@@ -20,7 +21,7 @@ class StatusManager:
         self.settings_manager = settings_manager  # Injected dependency
         self.mode = Mode.SOLID
         self.flashing_intervals = self.settings_manager.get_settings().flashing_intervals if settings_manager else DEFAULT_FLASH_INTERVAL
-        self.wave_intervals = 0.2  #TODO: make configurable  # Interval in seconds for wave status
+        self.wave_intervals = DEFAULT_WAVE_INTERVAL  #TODO: make configurable  # Interval in seconds for wave status
 
     def init_app(self, app, settings_manager, **kwargs):
         app.status_manager = self
