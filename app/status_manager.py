@@ -41,13 +41,10 @@ class StatusManager:
     def set_status_mode(self, mode):
         
         if mode == Mode.FLASHING:
-
             self._set_flashing_status()
 
         elif mode == Mode.WAVE:
-
-            #TODO: Implement wave mode
-            raise NotImplementedError("Wave mode is not implemented yet.")
+            self._set_wave_status()
 
         elif mode == Mode.SOLID:
             self.mode = Mode.SOLID
@@ -122,3 +119,18 @@ class StatusManager:
             if self.debug:
                 print(f"Error setting flashing status: {e}")
             raise
+
+    def _set_wave_status(self):
+
+        if self.mode == Mode.WAVE:
+            if self.debug:
+                print("Wave mode already set.")
+            return
+
+        self.mode = Mode.WAVE
+
+        number_of_leds = current_app.rpi_ws281x_manager.strip.numPixels()
+
+        for i in range(number_of_leds):
+            current_app.rpi_ws281x_manager.set_color_one_led_at_a_time(self.status.color, i)
+            time.sleep(1)

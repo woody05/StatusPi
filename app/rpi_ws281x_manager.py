@@ -61,4 +61,14 @@ class RPIWS281XManager:
 
         for i in range(self.strip.numPixels()):
             self.strip.setPixelColor(i, color)
+
         self.strip.show()
+
+    def set_color_one_led_at_a_time(self, color, led_index):
+
+        if led_index > self.strip.numPixels():
+            return
+
+        for i in range(led_index):
+            self.strip.setPixelColor(i, color)
+            self.strip.show()
