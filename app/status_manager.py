@@ -20,6 +20,7 @@ class StatusManager:
         self.settings_manager = settings_manager  # Injected dependency
         self.mode = Mode.SOLID
         self.flashing_intervals = self.settings_manager.get_settings().flashing_intervals if settings_manager else DEFAULT_FLASH_INTERVAL
+        self.wave_intervals = 0.2  #TODO: make configurable  # Interval in seconds for wave status
 
     def init_app(self, app, settings_manager, **kwargs):
         app.status_manager = self
@@ -136,6 +137,7 @@ class StatusManager:
         while self.mode == Mode.WAVE:
             for i in range(9):
                 current_app.rpi_ws281x_manager.set_status_wave(self.status.color, i)
-                time.sleep(0.5)
-            # time.sleep(0.5)
-            current_app.rpi_ws281x_manager.set_color(BLANK_COLOR)
+                time.sleep(self.wave_intervals)
+            for i in range(9):
+                current_app.rpi_ws281x_manager.set_status_wave(BLANK_COLOR, i)
+                time.sleep(self.wave_intervals)
