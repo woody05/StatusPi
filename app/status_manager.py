@@ -50,6 +50,7 @@ class StatusManager:
 
         elif mode == Mode.SOLID:
             self.mode = Mode.SOLID
+            self.set_status(self.status)
 
     def get_available_statuses(self):
         if not self.settings_manager:
