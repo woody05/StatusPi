@@ -134,8 +134,8 @@ class StatusManager:
         current_app.rpi_ws281x_manager.set_color(BLANK_COLOR)
 
         while self.mode == Mode.WAVE:
-            for i in range(8):
+            for i in range(9):
                 current_app.rpi_ws281x_manager.set_status_wave(self.status.color, i)
-                time.sleep(1)
-            time.sleep(1)
+                time.sleep(0.5)
+            time.sleep(0.5)
             current_app.rpi_ws281x_manager.set_color(BLANK_COLOR)
