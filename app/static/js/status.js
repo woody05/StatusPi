@@ -28,23 +28,6 @@ class Status {
         });
     }
 
-    static updateFlashingStatus(is_flashing) {
-        $.ajax({
-            url: '/flashing', // Endpoint to call
-            type: 'POST', // HTTP method
-            contentType: 'application/json', // Sending JSON data
-            data: JSON.stringify({ flashing: is_flashing }), // Data to send
-            success: function(response) {
-                console.log('Flashing updated successfully:', response);
-
-            },
-            error: function(xhr, status, error) {
-                console.error('Error updating status:', error);
-                // Optionally handle errors
-            }
-        });
-    }
-
     static changeMode(mode) {
         $.ajax({
             url: '/change/mode', // Endpoint to call

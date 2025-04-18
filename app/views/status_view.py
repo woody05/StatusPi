@@ -32,28 +32,6 @@ def status():
         current_app.status_manager.set_status(status)
     
     return jsonify({"status": current_app.status_manager.status.to_dict()}), 200
-    \
-
-@bp.route('/flashing', methods=['GET', 'POST'])
-def flashing():
-    if request.method == 'POST':
-        data = request.get_json()
-
-        flashing = data.get("flashing", None)
-
-        print(f"Flashing: {flashing}")
-        
-        if flashing is None or not isinstance(flashing, bool):
-            return jsonify({"error": "Invalid data"}), 400
-
-        if flashing:
-            current_app.status_manager.set_flashing_status()
-        else:
-            current_app.status_manager.stop_flashing()
-
-        return jsonify({"status": "success"}), 200
-    
-    return jsonify({"Flashing": current_app.status_manager.is_flashing}), 200
 
 @bp.route('/change/mode', methods=['GET', 'POST'])
 def change_mode():
