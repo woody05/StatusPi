@@ -50,6 +50,14 @@ class StatusManager:
 
         elif mode == Mode.SOLID:
             self.mode = Mode.SOLID
+
+            sleep_time = self.flashing_intervals
+
+            if self.wave_intervals > sleep_time:
+                sleep_time = self.wave_intervals
+                
+            time.sleep(sleep_time)
+        
             self.set_status(self.status)
 
     def get_available_statuses(self):
