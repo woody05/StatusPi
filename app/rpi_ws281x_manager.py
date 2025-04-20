@@ -64,7 +64,7 @@ class RPIWS281XManager:
 
         self.strip.show()
 
-    def set_color_one_led_at_a_time(self, color, led_index):
+    def set_color_single_index(self, color, led_index):
 
         if isinstance(color, str):
             color = color.replace("rgb", "").strip("()").split(",")
@@ -78,12 +78,8 @@ class RPIWS281XManager:
             
         color = Color(red, green, blue)
 
-        if led_index - 1 > self.strip.numPixels():
-            return
-
-        for i in range(led_index):
-            self.strip.setPixelColor(i, color)
-            self.strip.show()
+        self.strip.setPixelColor(led_index, color)
+        self.strip.show()
 
     def set_status_wave(self, color, line_number):
         if isinstance(color, str):

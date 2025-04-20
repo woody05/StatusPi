@@ -1,4 +1,5 @@
 from enum import Enum
+import random
 import threading
 import time
 from app.models.status import Status
@@ -6,11 +7,13 @@ from app.models.status import Status
 BLANK_COLOR = 'rgb(0, 0, 0)'  # Default color for blank status
 DEFAULT_FLASH_INTERVAL = 0.5  # Interval in seconds for flashing status
 DEFAULT_WAVE_INTERVAL = 0.08  # Interval in seconds for wave status
+DEFFAULT_SCATTER_INTERVAL = 0.2  # Interval in seconds for scatter status
 
 class Mode(Enum):
     SOLID = 1
     FLASHING = 2
     WAVE = 3
+    SCATTER = 4
 
 class StatusManager:
     def __init__(self, settings_manager=None, rpi_ws281x_manager=None):
@@ -24,6 +27,9 @@ class StatusManager:
 
         self.status_mode_task_thread = None
         self.status_mode_task_stop_event = threading.Event()
+
+        self.scatter_list = []
+        self.scatter_intervals = DEFFAULT_SCATTER_INTERVAL  # Interval in seconds for scatter status
 
     def init_app(self, app, settings_manager, **kwargs):
         app.status_manager = self
@@ -86,6 +92,15 @@ class StatusManager:
                 self.wave_intervals = DEFAULT_WAVE_INTERVAL
 
             mode_action = self._set_wave_mode
+
+        elif mode == Mode.SCATTER:
+            self.mode = Mode.SCATTER
+            self.scatter_intervals = None
+
+            if not self.scatter_intervals:
+                self.scatter_intervals = DEFFAULT_SCATTER_INTERVAL
+
+            mode_action = self._set_scatter_mode
 
         elif mode == Mode.SOLID:
             self.mode = Mode.SOLID
@@ -171,6 +186,39 @@ class StatusManager:
             if self.debug:
                 print(f"Error setting wave mode: {e}")
             raise
+    
+    def _set_scatter_mode(self):
+
+        try:
+
+            if self.debug:
+                print(f"Scatter mode: {self.status.color}")
+
+            if not self._contains_all_numbers(self.scatter_list, 33):
+                did_added_index = False
+                while not did_added_index:
+                    index = random.randint(0, 31)
+                    if index not in self.scatter_list:
+                        self.scatter_list.append(index)
+                        did_added_index = True
+
+                self.rpi_ws281x_manager.set_color_single_index(self.status.color, index)
+                time.sleep(self.scatter_intervals)
+            else:
+                did_removed_index = False
+                while not did_removed_index:
+                    index = random.randint(0, 31)
+                    if index in self.scatter_list:
+                        self.scatter_list.remove(index)
+                        did_removed_index = True
+                
+                self.rpi_ws281x_manager.set_color_single_index(self.status.color, index)
+                time.sleep(self.scatter_intervals)
+
+        except Exception as e:
+            if self.debug:
+                print(f"Error setting scatter mode: {e}")
+            raise
 
     def _set_solid_mode(self):
 
@@ -180,6 +228,12 @@ class StatusManager:
         self.rpi_ws281x_manager.set_color(self.status.color)
 
         self._stop_status_mode_task()
+
+    def _contains_all_numbers(self,lst, range):
+        # Create a set of numbers from 0 to 32
+        required_numbers = set(range(range))  # 33 because range is exclusive of the upper bound
+        # Convert the list to a set and check if it contains all required numbers
+        return required_numbers.issubset(set(lst))
 
 
         
