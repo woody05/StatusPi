@@ -42,11 +42,13 @@ class StatusManager:
             if threading.current_thread() != self.status_mode_task_thread:
                 self.status_mode_task_thread.join()
 
-        current_app.rpi_ws281x_manager.set_color(BLANK_COLOR)
+        with current_app.app_context():  # Push the Flask app context
+            current_app.rpi_ws281x_manager.set_color(BLANK_COLOR)
 
     def status_mode_background_task(self, action):
-        while not self.status_mode_task_stop_event.is_set():
-            action()
+        with current_app.app_context():  # Push the Flask app context
+            while not self.status_mode_task_stop_event.is_set():
+                action()
 
     def set_status(self, status):
         try:
