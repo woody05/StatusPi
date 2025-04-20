@@ -53,6 +53,6 @@ def change_mode():
 
         current_app.status_manager.set_status_mode(mode_enum)
 
-        return jsonify({"status": "success"}), 200
+        return jsonify({"status": "success", "mode": current_app.status_manager.mode.name}), 200
     
     return jsonify({"mode": current_app.status_manager.mode.name}), 200

@@ -1,6 +1,5 @@
 from enum import Enum
-import json
-import os
+import threading
 import time
 from flask import current_app
 from app.models.status import Status
@@ -23,6 +22,9 @@ class StatusManager:
         self.flashing_intervals = self.settings_manager.get_settings().flashing_intervals if settings_manager else DEFAULT_FLASH_INTERVAL
         self.wave_intervals = DEFAULT_WAVE_INTERVAL  #TODO: make configurable  # Interval in seconds for wave status
 
+        self.status_mode_task_thread = None
+        self.status_mode_task_stop_event = threading.Event()
+
     def init_app(self, app, settings_manager, **kwargs):
         app.status_manager = self
         self.debug = kwargs.get('debug', self.debug)
@@ -30,10 +32,27 @@ class StatusManager:
 
         # Set the default status
         self.status = self.get_available_status_by_id(1)
+        #set default mode
+        self.set_status_mode(self.mode)
+
+    def _stop_status_mode_task(self):
+         # if we have a task running, stop it
+        if self.status_mode_task_thread and self.status_mode_task_thread.is_alive():
+            self.status_mode_task_stop_event.set()
+            if threading.current_thread() != self.status_mode_task_thread:
+                self.status_mode_task_thread.join()
+
+        current_app.rpi_ws281x_manager.set_color(BLANK_COLOR)
+
+    def status_mode_background_task(self, action):
+        while not self.status_mode_task_stop_event.is_set():
+            action()
 
     def set_status(self, status):
         try:
             self.status = status
+            if self.mode == Mode.SOLID:
+                self._set_solid_mode()
             current_app.rpi_ws281x_manager.set_color(self.status.color)
         except Exception as e:
             if self.debug:
@@ -41,17 +60,42 @@ class StatusManager:
             raise
 
     def set_status_mode(self, mode):
+
+        if mode == self.mode:
+            if self.debug:
+                print(f"Status mode is already set to {mode.name}")
+            return
+
+        self._stop_status_mode_task()
+
+        mode_action = None
         
         if mode == Mode.FLASHING:
-            self._set_flashing_status()
+            self.mode = Mode.FLASHING
+            self.flashing_intervals = self.settings_manager.get_settings().flashing_intervals
+
+            if not self.flashing_intervals:
+                self.flashing_intervals = DEFAULT_FLASH_INTERVAL
+
+            mode_action = self._set_flashing_mode
 
         elif mode == Mode.WAVE:
-            self._set_wave_status()
+            self.mode = Mode.WAVE
+            self.wave_intervals = None
+
+            if not self.wave_intervals:
+                self.wave_intervals = DEFAULT_WAVE_INTERVAL
+
+            mode_action = self._set_wave_mode
 
         elif mode == Mode.SOLID:
             self.mode = Mode.SOLID
+            mode_action = self._set_solid_mode
+        
+        self.status_mode_task_stop_event.clear()
+        self.status_mode_task_thread = threading.Thread(target=self.status_mode_background_task, args=(mode_action,))
 
-            self.set_status(self.status)
+        self.status_mode_task_thread.start()
 
     def get_available_statuses(self):
         if not self.settings_manager:
@@ -89,60 +133,54 @@ class StatusManager:
                 print(f"Error setting brightness: {e}")
             raise
 
-    def _set_flashing_status(self):
-
-        if self.mode == Mode.FLASHING:
-            if self.debug:
-                print("Flashing mode already set.")
-                self.flashing_intervals = self.settings_manager.get_settings().flashing_intervals
-            return
-
-        self.mode = Mode.FLASHING
-        self.flashing_intervals = self.settings_manager.get_settings().flashing_intervals
-
-        if not self.flashing_intervals:
-            self.flashing_intervals = DEFAULT_FLASH_INTERVAL
+    def _set_flashing_mode(self):
 
         try:
-            self.mode = Mode.FLASHING
 
-            while self.mode == Mode.FLASHING:
+            if self.debug:
+                print(f"Flashing mode: {self.status.color}")
 
-                if self.debug:
-                    print(f"Flashing status: {self.status.color}")
+            current_app.rpi_ws281x_manager.set_color(BLANK_COLOR)
 
-                current_app.rpi_ws281x_manager.set_color(BLANK_COLOR)
+            time.sleep(self.flashing_intervals)
 
-                time.sleep(self.flashing_intervals)
+            current_app.rpi_ws281x_manager.set_color(self.status.color)
 
-                current_app.rpi_ws281x_manager.set_color(self.status.color)
-
-                time.sleep(self.flashing_intervals)
-                
-            self.set_status_mode(self.mode)
+            time.sleep(self.flashing_intervals)
 
         except Exception as e:
             if self.debug:
-                print(f"Error setting flashing status: {e}")
+                print(f"Error setting flashing mode: {e}")
             raise
 
-    def _set_wave_status(self):
+    def _set_wave_mode(self):
 
-        if self.mode == Mode.WAVE:
+        try:
+
             if self.debug:
-                print("Wave mode already set.")
-            return
+                print(f"Wave mode: {self.status.color}")
 
-        self.mode = Mode.WAVE
-
-        current_app.rpi_ws281x_manager.set_color(BLANK_COLOR)
-
-        while self.mode == Mode.WAVE:
             for i in range(9):
                 current_app.rpi_ws281x_manager.set_status_wave(self.status.color, i)
                 time.sleep(self.wave_intervals)
+
             for i in range(9):
                 current_app.rpi_ws281x_manager.set_status_wave(BLANK_COLOR, i)
                 time.sleep(self.wave_intervals)
 
-        self.set_status_mode(self.mode)
+        except Exception as e:
+            if self.debug:
+                print(f"Error setting wave mode: {e}")
+            raise
+
+    def _set_solid_mode(self):
+
+        if self.debug:
+            print(f"Solid mode: {self.status.color}")
+
+        current_app.rpi_ws281x_manager.set_color(self.status.color)
+
+        self._stop_status_mode_task()
+
+
+        
