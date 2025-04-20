@@ -1,7 +1,6 @@
 from enum import Enum
 import threading
 import time
-from flask import current_app
 from app.models.status import Status
 
 BLANK_COLOR = 'rgb(0, 0, 0)'  # Default color for blank status
@@ -14,10 +13,11 @@ class Mode(Enum):
     WAVE = 3
 
 class StatusManager:
-    def __init__(self, settings_manager=None):
+    def __init__(self, settings_manager=None, rpi_ws281x_manager=None):
         self.status = None
         self.debug = False
         self.settings_manager = settings_manager  # Injected dependency
+        self.rpi_ws281x_manager = rpi_ws281x_manager
         self.mode = Mode.SOLID
         self.flashing_intervals = self.settings_manager.get_settings().flashing_intervals if settings_manager else DEFAULT_FLASH_INTERVAL
         self.wave_intervals = DEFAULT_WAVE_INTERVAL  #TODO: make configurable  # Interval in seconds for wave status
@@ -29,6 +29,7 @@ class StatusManager:
         app.status_manager = self
         self.debug = kwargs.get('debug', self.debug)
         self.settings_manager = settings_manager
+        self.rpi_ws281x_manager = app.rpi_ws281x_manager
 
         # Set the default status
         self.status = self.get_available_status_by_id(1)
@@ -42,20 +43,18 @@ class StatusManager:
             if threading.current_thread() != self.status_mode_task_thread:
                 self.status_mode_task_thread.join()
 
-        with current_app.app_context():  # Push the Flask app context
-            current_app.rpi_ws281x_manager.set_color(BLANK_COLOR)
+            self.rpi_ws281x_manager.set_color(BLANK_COLOR)
 
     def status_mode_background_task(self, action):
-        with current_app.app_context():  # Push the Flask app context
-            while not self.status_mode_task_stop_event.is_set():
-                action()
+        while not self.status_mode_task_stop_event.is_set():
+            action()
 
     def set_status(self, status):
         try:
             self.status = status
             if self.mode == Mode.SOLID:
                 self._set_solid_mode()
-            current_app.rpi_ws281x_manager.set_color(self.status.color)
+            self.rpi_ws281x_manager.set_color(self.status.color)
         except Exception as e:
             if self.debug:
                 print(f"Error setting status: {e}")
@@ -129,7 +128,7 @@ class StatusManager:
         try:
             if self.debug:
                 print(f"Setting brightness to {brightness}")
-            current_app.rpi_ws281x_manager.set_brightness(brightness)
+            self.rpi_ws281x_manager.set_brightness(brightness)
         except Exception as e:
             if self.debug:
                 print(f"Error setting brightness: {e}")
@@ -142,11 +141,11 @@ class StatusManager:
             if self.debug:
                 print(f"Flashing mode: {self.status.color}")
 
-            current_app.rpi_ws281x_manager.set_color(BLANK_COLOR)
+            self.rpi_ws281x_manager.set_color(BLANK_COLOR)
 
             time.sleep(self.flashing_intervals)
 
-            current_app.rpi_ws281x_manager.set_color(self.status.color)
+            self.rpi_ws281x_manager.set_color(self.status.color)
 
             time.sleep(self.flashing_intervals)
 
@@ -163,11 +162,11 @@ class StatusManager:
                 print(f"Wave mode: {self.status.color}")
 
             for i in range(9):
-                current_app.rpi_ws281x_manager.set_status_wave(self.status.color, i)
+                self.rpi_ws281x_manager.set_status_wave(self.status.color, i)
                 time.sleep(self.wave_intervals)
 
             for i in range(9):
-                current_app.rpi_ws281x_manager.set_status_wave(BLANK_COLOR, i)
+                self.rpi_ws281x_manager.set_status_wave(BLANK_COLOR, i)
                 time.sleep(self.wave_intervals)
 
         except Exception as e:
@@ -180,7 +179,7 @@ class StatusManager:
         if self.debug:
             print(f"Solid mode: {self.status.color}")
 
-        current_app.rpi_ws281x_manager.set_color(self.status.color)
+        self.rpi_ws281x_manager.set_color(self.status.color)
 
         self._stop_status_mode_task()
 
