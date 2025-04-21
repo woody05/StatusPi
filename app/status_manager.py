@@ -7,7 +7,7 @@ from app.models.status import Status
 BLANK_COLOR = 'rgb(0, 0, 0)'  # Default color for blank status
 DEFAULT_FLASH_INTERVAL = 0.5  # Interval in seconds for flashing status
 DEFAULT_WAVE_INTERVAL = 0.08  # Interval in seconds for wave status
-DEFFAULT_SCATTER_INTERVAL = 0.1  # Interval in seconds for scatter status
+DEFFAULT_SCATTER_INTERVAL = 0.03  # Interval in seconds for scatter status
 
 class Mode(Enum):
     SOLID = 1
@@ -98,6 +98,10 @@ class StatusManager:
             return
 
         self._stop_status_mode_task()
+
+        #TODO: move this logic
+        if mode == Mode.SCATTER:
+            self.rpi_ws281x_manager.set_color(BLANK_COLOR)
 
         mode_setting = self.mode_settings.get(mode)
         mode_action = None
