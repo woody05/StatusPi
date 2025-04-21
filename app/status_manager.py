@@ -63,7 +63,7 @@ class StatusManager:
         # Set the default status
         self.status = self.get_available_status_by_id(1)
         #set default mode
-        self.set_status_mode(self.mode)
+        self._set_solid_mode()
 
     def get_mode_list(self):
         """Return the Mode enum as a list of strings."""
@@ -202,7 +202,8 @@ class StatusManager:
             if self.debug:
                 print(f"Scatter mode: {self.status.color}")
 
-            turn_led_on = random.choice([True, False])
+            # Adjust the probability: 55% chance to turn LED on, 45% chance to turn it off
+            turn_led_on = random.choices([True, False], weights=[55, 45], k=1)[0]
             random_led_index = random.randint(0, 33)
                 
             if turn_led_on:
