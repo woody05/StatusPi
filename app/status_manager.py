@@ -203,7 +203,7 @@ class StatusManager:
                 print(f"Scatter mode: {self.status.color}")
 
             # Adjust the probability: 55% chance to turn LED on, 45% chance to turn it off
-            turn_led_on = random.choices([True, False], weights=[55, 45], k=1)[0]
+            turn_led_on = random.choices([True, False], weights=[60, 40], k=1)[0]
             random_led_index = random.randint(0, 33)
                 
             if turn_led_on:
