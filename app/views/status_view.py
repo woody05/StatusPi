@@ -8,10 +8,11 @@ bp = Blueprint('status', __name__)
 def index():
     status = current_app.status_manager.status
     available_statuses = current_app.status_manager.get_available_statuses()
+    modes = current_app.status_manager.get_mode_list()
 
     mode = current_app.status_manager.mode
 
-    return render_template('index.html', status=status, available_statuses=available_statuses, mode=mode)
+    return render_template('index.html', status=status, available_statuses=available_statuses, mode=mode, modes=modes)
 
 @bp.route('/status', methods=['GET', 'POST'])
 def status():

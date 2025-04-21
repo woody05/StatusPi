@@ -7,7 +7,7 @@ from app.models.status import Status
 BLANK_COLOR = 'rgb(0, 0, 0)'  # Default color for blank status
 DEFAULT_FLASH_INTERVAL = 0.5  # Interval in seconds for flashing status
 DEFAULT_WAVE_INTERVAL = 0.08  # Interval in seconds for wave status
-DEFFAULT_SCATTER_INTERVAL = 0.2  # Interval in seconds for scatter status
+DEFFAULT_SCATTER_INTERVAL = 0.3  # Interval in seconds for scatter status
 
 class Mode(Enum):
     SOLID = 1
@@ -28,19 +28,45 @@ class StatusManager:
         self.status_mode_task_thread = None
         self.status_mode_task_stop_event = threading.Event()
 
-        self.scatter_list = []
         self.scatter_intervals = DEFFAULT_SCATTER_INTERVAL  # Interval in seconds for scatter status
 
-    def init_app(self, app, settings_manager, **kwargs):
+        self.mode_settings = {
+            Mode.SOLID: {
+                "interval": None,
+                "interval_variable": None,  # No interval variable for solid mode
+                "method": self._set_solid_mode
+            },
+            Mode.FLASHING: {
+                "interval": self.settings_manager.get_settings().flashing_intervals if settings_manager else DEFAULT_FLASH_INTERVAL,
+                "interval_variable": "flashing_intervals",  # Use the attribute name as a string
+                "method": self._set_flashing_mode
+            },
+            Mode.WAVE: {
+                "interval": DEFAULT_WAVE_INTERVAL,
+                "interval_variable": "wave_intervals",  # Use the attribute name as a string
+                "method": self._set_wave_mode
+            },
+            Mode.SCATTER: {
+                "interval": DEFFAULT_SCATTER_INTERVAL,
+                "interval_variable": "scatter_intervals",  # Use the attribute name as a string
+                "method": self._set_scatter_mode
+            }
+        }
+
+    def init_app(self, app, **kwargs):
         app.status_manager = self
         self.debug = kwargs.get('debug', self.debug)
-        self.settings_manager = settings_manager
+        self.settings_manager = app.settings_manager
         self.rpi_ws281x_manager = app.rpi_ws281x_manager
 
         # Set the default status
         self.status = self.get_available_status_by_id(1)
         #set default mode
         self.set_status_mode(self.mode)
+
+    def get_mode_list(self):
+        """Return the Mode enum as a list of strings."""
+        return [mode.name for mode in Mode]
 
     def _stop_status_mode_task(self):
          # if we have a task running, stop it
@@ -73,38 +99,15 @@ class StatusManager:
 
         self._stop_status_mode_task()
 
+        mode_setting = self.mode_settings.get(mode)
         mode_action = None
-        
-        if mode == Mode.FLASHING:
-            self.mode = Mode.FLASHING
-            self.flashing_intervals = self.settings_manager.get_settings().flashing_intervals
 
-            if not self.flashing_intervals:
-                self.flashing_intervals = DEFAULT_FLASH_INTERVAL
-
-            mode_action = self._set_flashing_mode
-
-        elif mode == Mode.WAVE:
-            self.mode = Mode.WAVE
-            self.wave_intervals = None
-
-            if not self.wave_intervals:
-                self.wave_intervals = DEFAULT_WAVE_INTERVAL
-
-            mode_action = self._set_wave_mode
-
-        elif mode == Mode.SCATTER:
-            self.mode = Mode.SCATTER
-            self.scatter_intervals = None
-
-            if not self.scatter_intervals:
-                self.scatter_intervals = DEFFAULT_SCATTER_INTERVAL
-
-            mode_action = self._set_scatter_mode
-
-        elif mode == Mode.SOLID:
-            self.mode = Mode.SOLID
-            mode_action = self._set_solid_mode
+        if mode_setting:
+            self.mode = mode
+            if mode_setting.get("interval_variable") is not None and mode_setting.get("interval") is not None:
+                setattr(self, mode_setting.get("interval_variable"), mode_setting.get("interval"))
+            if mode_setting.get("method") is not None:
+                mode_action = mode_setting.get("method")
         
         self.status_mode_task_stop_event.clear()
         self.status_mode_task_thread = threading.Thread(target=self.status_mode_background_task, args=(mode_action,))
@@ -194,26 +197,19 @@ class StatusManager:
             if self.debug:
                 print(f"Scatter mode: {self.status.color}")
 
-            if not self._contains_all_numbers(self.scatter_list, 33):
-                did_added_index = False
-                while not did_added_index:
-                    index = random.randint(0, 31)
-                    if index not in self.scatter_list:
-                        self.scatter_list.append(index)
-                        did_added_index = True
-
-                self.rpi_ws281x_manager.set_color_single_index(self.status.color, index)
-                time.sleep(self.scatter_intervals)
-            else:
-                did_removed_index = False
-                while not did_removed_index:
-                    index = random.randint(0, 31)
-                    if index in self.scatter_list:
-                        self.scatter_list.remove(index)
-                        did_removed_index = True
+            turn_led_on = random.choice([True, False])
+            random_led_index = random.randint(0, 33)
                 
-                self.rpi_ws281x_manager.set_color_single_index(self.status.color, index)
-                time.sleep(self.scatter_intervals)
+            if turn_led_on:
+                if self.debug:
+                    print(f"Setting color {self.status.color} on LED index {random_led_index}")
+                self.rpi_ws281x_manager.set_color_single_index(self.status.color, random_led_index)
+            else:
+                if self.debug:
+                    print(f"Setting color {BLANK_COLOR} on LED index {random_led_index}")
+                self.rpi_ws281x_manager.set_color_single_index(BLANK_COLOR, random_led_index)
+
+            time.sleep(self.scatter_intervals)
 
         except Exception as e:
             if self.debug:
@@ -228,12 +224,6 @@ class StatusManager:
         self.rpi_ws281x_manager.set_color(self.status.color)
 
         self._stop_status_mode_task()
-
-    def _contains_all_numbers(self,lst, range):
-        # Create a set of numbers from 0 to 32
-        required_numbers = set(range(range))  # 33 because range is exclusive of the upper bound
-        # Convert the list to a set and check if it contains all required numbers
-        return required_numbers.issubset(set(lst))
 
 
         
