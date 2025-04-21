@@ -7,7 +7,7 @@ from app.models.status import Status
 BLANK_COLOR = 'rgb(0, 0, 0)'  # Default color for blank status
 DEFAULT_FLASH_INTERVAL = 0.5  # Interval in seconds for flashing status
 DEFAULT_WAVE_INTERVAL = 0.08  # Interval in seconds for wave status
-DEFFAULT_SCATTER_INTERVAL = 0.3  # Interval in seconds for scatter status
+DEFFAULT_SCATTER_INTERVAL = 0.1  # Interval in seconds for scatter status
 
 class Mode(Enum):
     SOLID = 1
