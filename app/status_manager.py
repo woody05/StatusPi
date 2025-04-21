@@ -58,6 +58,7 @@ class StatusManager:
         self.debug = kwargs.get('debug', self.debug)
         self.settings_manager = app.settings_manager
         self.rpi_ws281x_manager = app.rpi_ws281x_manager
+        self.mode = Mode.SOLID
 
         # Set the default status
         self.status = self.get_available_status_by_id(1)
