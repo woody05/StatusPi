@@ -36,7 +36,7 @@ class RPIWS281XManager:
         self.debug = kwargs.get('debug', self.debug)
         self.settings_manager = app.settings_manager
 
-        self.set_color('rgb(255, 255, 255)')  # Set initial color to black (off)
+        # self.set_color('rgb(255, 255, 255)')  # Set initial color to black (off)
         self.set_brightness(self.settings_manager.get_settings().brightness)
         self.strip.show()
 
