@@ -90,7 +90,10 @@ class StatusManager:
                 print(f"Error setting status: {e}")
             raise
 
-    def set_status_mode(self, mode):
+    def set_status_mode(self, mode=None):
+
+        if not mode:    
+            mode = self.mode
 
         # if mode == self.mode:
         #     if self.debug:
