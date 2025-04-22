@@ -54,9 +54,9 @@ class StatusManager:
         self.settings_manager = app.settings_manager
         self.rpi_ws281x_manager = app.rpi_ws281x_manager
         self.mode = self.settings_manager.get_settings().default_mode if self.settings_manager else DEFAULT_MODE
-        self.flashing_intervals = self.settings_manager.get_settings().flashing_intervals if self.settings_manager else DEFAULT_FLASH_INTERVAL
-        self.wave_intervals = self.settings_manager.get_settings().wave_intervals if self.settings_manager else DEFAULT_WAVE_INTERVAL
-        self.scatter_intervals = self.settings_manager.get_settings().scatter_intervals if self.settings_manager else DEFFAULT_SCATTER_INTERVAL
+        self.flashing_intervals = float(self.settings_manager.get_settings().flashing_intervals) if self.settings_manager else DEFAULT_FLASH_INTERVAL
+        self.wave_intervals = float(self.settings_manager.get_settings().wave_intervals) if self.settings_manager else DEFAULT_WAVE_INTERVAL
+        self.scatter_intervals = float(self.settings_manager.get_settings().scatter_intervals) if self.settings_manager else DEFFAULT_SCATTER_INTERVAL
         # Set the default status
         self.status = self.get_available_status_by_id(1)
         self.rpi_ws281x_manager.set_color(self.status.color)
