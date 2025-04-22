@@ -37,12 +37,12 @@ class StatusManager:
                 "method": self._set_flashing_mode
             },
             Mode.WAVE: {
-                "interval": DEFAULT_WAVE_INTERVAL,
+                "interval": self.wave_intervals,
                 "interval_variable": "wave_intervals",  # Use the attribute name as a string
                 "method": self._set_wave_mode
             },
             Mode.SCATTER: {
-                "interval": DEFFAULT_SCATTER_INTERVAL,
+                "interval": self.scatter_intervals,
                 "interval_variable": "scatter_intervals",  # Use the attribute name as a string
                 "method": self._set_scatter_mode
             }
