@@ -21,10 +21,4 @@ def create_app():
     app.register_blueprint(status_view.bp)
     app.register_blueprint(settings_view.bp)
 
-    # Start the status mode thread immediately after app creation
-    with app.app_context():
-        if app.debug:
-            print("Starting status mode thread...")
-        status_manager.set_status_mode()
-
     return app
