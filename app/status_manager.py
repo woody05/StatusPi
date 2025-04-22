@@ -95,18 +95,9 @@ class StatusManager:
         if not mode:    
             mode = self.mode
 
-        # if mode == self.mode:
-        #     if self.debug:
-        #         print(f"Status mode is already set to {mode.name}")
-        #     return
-
         if self.debug:
             print(f"Setting status mode to {mode.name}")
         self._stop_status_mode_task()
-
-        #TODO: move this logic
-        # if mode == Mode.SCATTER:
-            # self.rpi_ws281x_manager.set_color(BLANK_COLOR)
 
         mode_setting = self.mode_settings.get(mode)
         mode_action = None
