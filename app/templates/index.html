@@ -51,12 +51,7 @@
     const MODE = {{ mode.name | tojson }};
 
     $(function () {
-        // Initialize the radio buttons based on IS_FLASHING
-        // if (MODE == 'FLASHING') {
-        //     $('#mode-flashing').prop('checked', true);
-        // } else {
-        //     $('#mode-solid').prop('checked', true);
-        // }
+        Status.changeMode(MODE);
     });
 
     // function to update the status
