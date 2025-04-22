@@ -21,9 +21,8 @@ def create_app():
     app.register_blueprint(status_view.bp)
     app.register_blueprint(settings_view.bp)
 
-    #Run set_status_mode after the app is fully initialized
-    @app.before_first_request
-    def initialize_status_mode():
+    # Run set_status_mode after the app is fully initialized
+    with app.app_context():
         app.status_manager.set_status_mode()
 
     return app
