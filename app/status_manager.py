@@ -109,8 +109,8 @@ class StatusManager:
 
         if mode_setting:
             self.mode = mode
-            if mode_setting.get("interval_variable") is not None and mode_setting.get("interval") is not None:
-                setattr(self, mode_setting.get("interval_variable"), mode_setting.get("interval"))
+            # if mode_setting.get("interval_variable") is not None and mode_setting.get("interval") is not None:
+            #     setattr(self, mode_setting.get("interval_variable"), mode_setting.get("interval"))
             if mode_setting.get("method") is not None:
                 mode_action = mode_setting.get("method")
 
