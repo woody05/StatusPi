@@ -27,23 +27,15 @@ class StatusManager:
 
         self.mode_settings = {
             Mode.SOLID: {
-                "interval": None,
-                "interval_variable": None,  # No interval variable for solid mode
                 "method": self._set_solid_mode
             },
             Mode.FLASHING: {
-                "interval": self.settings_manager.get_settings().flashing_intervals if settings_manager else DEFAULT_FLASH_INTERVAL,
-                "interval_variable": "flashing_intervals",  # Use the attribute name as a string
                 "method": self._set_flashing_mode
             },
             Mode.WAVE: {
-                "interval": self.settings_manager.get_settings().wave_intervals if settings_manager else DEFAULT_WAVE_INTERVAL,
-                "interval_variable": "wave_intervals",  # Use the attribute name as a string
                 "method": self._set_wave_mode
             },
             Mode.SCATTER: {
-                "interval": self.settings_manager.get_settings().scater_intervals if settings_manager else DEFFAULT_SCATTER_INTERVAL,
-                "interval_variable": "scatter_intervals",  # Use the attribute name as a string
                 "method": self._set_scatter_mode
             }
         }
@@ -57,8 +49,9 @@ class StatusManager:
         self.flashing_intervals = float(self.settings_manager.get_settings().flashing_intervals) if self.settings_manager else DEFAULT_FLASH_INTERVAL
         self.wave_intervals = float(self.settings_manager.get_settings().wave_intervals) if self.settings_manager else DEFAULT_WAVE_INTERVAL
         self.scatter_intervals = float(self.settings_manager.get_settings().scatter_intervals) if self.settings_manager else DEFFAULT_SCATTER_INTERVAL
-        # Set the default status
         self.status = self.get_available_status_by_id(1)
+        # set the initial color to first status
+        # Could not figure out threading issue with set_status_mode 
         self.rpi_ws281x_manager.set_color(self.status.color)
 
     def get_mode_list(self):
@@ -71,7 +64,6 @@ class StatusManager:
          # if we have a task running, stop it
         if self.status_mode_task_thread and self.status_mode_task_thread.is_alive():
             self.status_mode_task_stop_event.set()
-            # if threading.current_thread() != self.status_mode_task_thread:
             self.status_mode_task_thread.join()
             if self.debug:
                     print("Status mode task stopped.")
@@ -92,9 +84,6 @@ class StatusManager:
             raise
 
     def set_status_mode(self, mode=None):
-        # if self.mode == mode:
-        #     return
-
         # Stop the existing thread if it's running
         self._stop_status_mode_task()
 
@@ -109,8 +98,6 @@ class StatusManager:
 
         if mode_setting:
             self.mode = mode
-            # if mode_setting.get("interval_variable") is not None and mode_setting.get("interval") is not None:
-            #     setattr(self, mode_setting.get("interval_variable"), mode_setting.get("interval"))
             if mode_setting.get("method") is not None:
                 mode_action = mode_setting.get("method")
 
@@ -223,13 +210,16 @@ class StatusManager:
             raise
 
     def _set_solid_mode(self):
+        try:
+            if self.debug:
+                print(f"Solid mode: {self.status.color}")
 
-        if self.debug:
-            print(f"Solid mode: {self.status.color}")
+            self.rpi_ws281x_manager.set_color(self.status.color)
 
-        self.rpi_ws281x_manager.set_color(self.status.color)
-
-        self._stop_status_mode_task()
-
+            self._stop_status_mode_task()
+        except Exception as e:
+            if self.debug:
+                print(f"Error setting solid mode: {e}")
+            raise
 
         
