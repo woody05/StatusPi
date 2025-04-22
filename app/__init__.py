@@ -21,11 +21,10 @@ def create_app():
     app.register_blueprint(status_view.bp)
     app.register_blueprint(settings_view.bp)
 
-    # Ensure set_status_mode runs after the app is fully initialized
-    @app.before_first_request
-    def start_status_mode():
+    # Start the status mode thread immediately after app creation
+    with app.app_context():
         if app.debug:
             print("Starting status mode thread...")
-        app.status_manager.set_status_mode()
+        status_manager.set_status_mode()
 
     return app

@@ -91,13 +91,14 @@ class StatusManager:
             raise
 
     def set_status_mode(self, mode=None):
+        # Stop the existing thread if it's running
+        self._stop_status_mode_task()
 
-        if not mode:    
+        if not mode:
             mode = self.mode
 
         if self.debug:
             print(f"Setting status mode to {mode.name}")
-        self._stop_status_mode_task()
 
         mode_setting = self.mode_settings.get(mode)
         mode_action = None
@@ -108,10 +109,10 @@ class StatusManager:
                 setattr(self, mode_setting.get("interval_variable"), mode_setting.get("interval"))
             if mode_setting.get("method") is not None:
                 mode_action = mode_setting.get("method")
-        
+
+        # Clear the stop event and start a new thread
         self.status_mode_task_stop_event.clear()
         self.status_mode_task_thread = threading.Thread(target=self.status_mode_background_task, args=(mode_action,))
-
         self.status_mode_task_thread.start()
 
     def get_available_statuses(self):
