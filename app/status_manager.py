@@ -102,8 +102,9 @@ class StatusManager:
         if self.debug:
             print(f"Setting status mode to {mode.name}")
 
-        # Stop the current task if a thread is running
-        self._stop_status_mode_task()
+        # Stop the current task if a thread is running, but only if a thread was previously started
+        if start_thread:
+            self._stop_status_mode_task()
 
         mode_setting = self.mode_settings.get(mode)
         mode_action = None
@@ -123,7 +124,7 @@ class StatusManager:
             return
 
         # Start a new thread for the mode's background task
-        if mode_action:
+        if mode_action and start_thread:
             self.status_mode_task_stop_event.clear()
             self.status_mode_task_thread = threading.Thread(target=self.status_mode_background_task, args=(mode_action,))
             self.status_mode_task_thread.start()
