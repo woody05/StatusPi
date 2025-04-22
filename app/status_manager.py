@@ -60,7 +60,7 @@ class StatusManager:
         # Set the default status
         self.status = self.get_available_status_by_id(1)
         #set default mode
-        # self.set_status_mode(self.mode)
+        self.set_status_mode()
 
     def get_mode_list(self):
         """Return the Mode enum as a list of strings."""
@@ -92,7 +92,10 @@ class StatusManager:
                 print(f"Error setting status: {e}")
             raise
 
-    def set_status_mode(self, mode):
+    def set_status_mode(self, mode= None):
+
+        if not mode:
+            mode = self.mode
 
         # if mode == self.mode:
         #     if self.debug:
