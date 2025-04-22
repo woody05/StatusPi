@@ -90,10 +90,10 @@ class StatusManager:
 
     def set_status_mode(self, mode):
 
-        if mode == self.mode:
-            if self.debug:
-                print(f"Status mode is already set to {mode.name}")
-            return
+        # if mode == self.mode:
+        #     if self.debug:
+        #         print(f"Status mode is already set to {mode.name}")
+        #     return
 
         self._stop_status_mode_task()
 
