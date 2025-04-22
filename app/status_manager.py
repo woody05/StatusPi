@@ -60,7 +60,7 @@ class StatusManager:
         # Set the default status
         self.status = self.get_available_status_by_id(1)
         #set default mode
-        self.set_status_mode(self.mode)
+        # self.set_status_mode(self.mode)
 
     def get_mode_list(self):
         """Return the Mode enum as a list of strings."""
@@ -99,7 +99,12 @@ class StatusManager:
         #         print(f"Status mode is already set to {mode.name}")
         #     return
 
+        if self.debug:
+            print(f"Setting status mode to {mode.name}")
         self._stop_status_mode_task()
+
+        if self.debug:
+            print(f"Fucker stopped???")
 
         #TODO: move this logic
         # if mode == Mode.SCATTER:
