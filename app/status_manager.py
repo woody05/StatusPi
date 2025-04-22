@@ -48,8 +48,10 @@ class StatusManager:
     def init_app(self, app, **kwargs):
         app.status_manager = self
         self.debug = kwargs.get('debug', self.debug)
+
         self.status_mode_task_thread = None
         self.status_mode_task_stop_event = threading.Event()
+
         self.settings_manager = app.settings_manager
         self.rpi_ws281x_manager = app.rpi_ws281x_manager
         self.mode = self.settings_manager.get_settings().default_mode if self.settings_manager else DEFAULT_MODE
@@ -59,7 +61,7 @@ class StatusManager:
         # Set the default status
         self.status = self.get_available_status_by_id(1)
         #set default mode
-        self.set_status_mode(self.mode)
+        self.set_status_mode()
 
     def get_mode_list(self):
         """Return the Mode enum as a list of strings."""
