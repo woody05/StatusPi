@@ -59,11 +59,6 @@ class StatusManager:
         self.scatter_intervals = self.settings_manager.get_settings().scatter_intervals if self.settings_manager else DEFFAULT_SCATTER_INTERVAL
         # Set the default status
         self.status = self.get_available_status_by_id(1)
-        if self.debug:
-            print(f"Initialized status: {self.status}")
-
-        # Set the default mode without starting a new thread
-        self.set_status_mode(self.mode, start_thread=False)
 
     def get_mode_list(self):
         """Return the Mode enum as a list of strings."""
@@ -95,16 +90,20 @@ class StatusManager:
                 print(f"Error setting status: {e}")
             raise
 
-    def set_status_mode(self, mode=None, start_thread=True):
-        if not mode:
-            mode = self.mode
+    def set_status_mode(self, mode):
+
+        # if mode == self.mode:
+        #     if self.debug:
+        #         print(f"Status mode is already set to {mode.name}")
+        #     return
 
         if self.debug:
             print(f"Setting status mode to {mode.name}")
+        self._stop_status_mode_task()
 
-        # Stop the current task if a thread is running, but only if a thread was previously started
-        if start_thread:
-            self._stop_status_mode_task()
+        #TODO: move this logic
+        # if mode == Mode.SCATTER:
+            # self.rpi_ws281x_manager.set_color(BLANK_COLOR)
 
         mode_setting = self.mode_settings.get(mode)
         mode_action = None
@@ -115,19 +114,11 @@ class StatusManager:
                 setattr(self, mode_setting.get("interval_variable"), mode_setting.get("interval"))
             if mode_setting.get("method") is not None:
                 mode_action = mode_setting.get("method")
+        
+        self.status_mode_task_stop_event.clear()
+        self.status_mode_task_thread = threading.Thread(target=self.status_mode_background_task, args=(mode_action,))
 
-        # If start_thread is False, execute the mode action directly
-        if not start_thread and mode_action:
-            if self.debug:
-                print(f"Executing mode action directly for mode: {mode.name}")
-            mode_action()
-            return
-
-        # Start a new thread for the mode's background task
-        if mode_action and start_thread:
-            self.status_mode_task_stop_event.clear()
-            self.status_mode_task_thread = threading.Thread(target=self.status_mode_background_task, args=(mode_action,))
-            self.status_mode_task_thread.start()
+        self.status_mode_task_thread.start()
 
     def get_available_statuses(self):
         if not self.settings_manager:
