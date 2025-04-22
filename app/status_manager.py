@@ -59,7 +59,7 @@ class StatusManager:
         self.scatter_intervals = self.settings_manager.get_settings().scatter_intervals if self.settings_manager else DEFFAULT_SCATTER_INTERVAL
         # Set the default status
         self.status = self.get_available_status_by_id(1)
-        self.set_status_mode()
+        self.rpi_ws281x_manager.set_color(self.status.color)
 
     def get_mode_list(self):
         """Return the Mode enum as a list of strings."""
