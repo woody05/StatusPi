@@ -2,12 +2,6 @@ from enum import Enum
 import random
 import threading
 import time
-from app.models.status import Status
-
-BLANK_COLOR = 'rgb(0, 0, 0)'  # Default color for blank status
-DEFAULT_FLASH_INTERVAL = 0.5  # Interval in seconds for flashing status
-DEFAULT_WAVE_INTERVAL = 0.08  # Interval in seconds for wave status
-DEFFAULT_SCATTER_INTERVAL = 0.03  # Interval in seconds for scatter status
 
 class Mode(Enum):
     SOLID = 1
@@ -15,20 +9,21 @@ class Mode(Enum):
     WAVE = 3
     SCATTER = 4
 
+BLANK_COLOR = 'rgb(0, 0, 0)'  # Default color for blank status
+DEFAULT_FLASH_INTERVAL = 0.5  # Interval in seconds for flashing status
+DEFAULT_WAVE_INTERVAL = 0.08  # Interval in seconds for wave status
+DEFFAULT_SCATTER_INTERVAL = 0.03  # Interval in seconds for scatter status
+DEFAULT_MODE = Mode.SOLID  # Default mode for the status manager
+
 class StatusManager:
     def __init__(self, settings_manager=None, rpi_ws281x_manager=None):
         self.status = None
         self.debug = False
         self.settings_manager = settings_manager  # Injected dependency
         self.rpi_ws281x_manager = rpi_ws281x_manager
-        self.mode = Mode.SOLID
-        self.flashing_intervals = self.settings_manager.get_settings().flashing_intervals if settings_manager else DEFAULT_FLASH_INTERVAL
-        self.wave_intervals = DEFAULT_WAVE_INTERVAL  #TODO: make configurable  # Interval in seconds for wave status
 
         self.status_mode_task_thread = None
         self.status_mode_task_stop_event = threading.Event()
-
-        self.scatter_intervals = DEFFAULT_SCATTER_INTERVAL  # Interval in seconds for scatter status
 
         self.mode_settings = {
             Mode.SOLID: {
@@ -58,8 +53,10 @@ class StatusManager:
         self.debug = kwargs.get('debug', self.debug)
         self.settings_manager = app.settings_manager
         self.rpi_ws281x_manager = app.rpi_ws281x_manager
-        self.mode = Mode.SOLID
-
+        self.mode = self.settings_manager.get_settings().default_mode if self.settings_manager else DEFAULT_MODE
+        self.flashing_intervals = self.settings_manager.get_settings().flashing_intervals if self.settings_manager else DEFAULT_FLASH_INTERVAL
+        self.wave_intervals = self.settings_manager.get_settings().wave_intervals if self.settings_manager else DEFAULT_WAVE_INTERVAL
+        self.scatter_intervals = self.settings_manager.get_settings().scatter_intervals if self.settings_manager else DEFFAULT_SCATTER_INTERVAL
         # Set the default status
         self.status = self.get_available_status_by_id(1)
         #set default mode
@@ -101,8 +98,8 @@ class StatusManager:
         self._stop_status_mode_task()
 
         #TODO: move this logic
-        if mode == Mode.SCATTER:
-            self.rpi_ws281x_manager.set_color(BLANK_COLOR)
+        # if mode == Mode.SCATTER:
+            # self.rpi_ws281x_manager.set_color(BLANK_COLOR)
 
         mode_setting = self.mode_settings.get(mode)
         mode_action = None

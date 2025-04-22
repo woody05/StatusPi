@@ -14,7 +14,11 @@ DEFAULT_SETTINGS_V1 = AppSettings(
                 Status(id=2, name="Away", color="rgb(255, 255, 0)"),
                 Status(id=3, name="Busy", color="rgb(255, 0, 0)"),
             ],
-            version=1
+            version=1,
+            flashing_intervals=0.2,
+            wave_intervals=0.3,
+            scatter_intervals=0.03,
+            default_mode=Mode.SOLID
         )
 
 class SettingsManager:
@@ -39,11 +43,7 @@ class SettingsManager:
                     print(f"Loaded app settings: {data}")
 
                 # Convert each status dictionary into a Status object
-                app_settings = AppSettings()
-                app_settings.brightness = data.get("brightness", 0)
-                app_settings.statuses = [Status(**status) for status in data.get("statuses", [])]
-                app_settings.version = data.get("version", 1)
-                app_settings.flashing_intervals = float(data.get("flashing_intervals", 0.5))
+                app_settings = self._convert_to_app_settings(data)
                 
                 return app_settings
         except FileNotFoundError:
@@ -95,6 +95,14 @@ class SettingsManager:
                 if self.debug:
                     print(f"Updating flashing intervals to: {settings.flashing_intervals}")
                 current_app.status_manager.flashing_intervals = float(settings.flashing_intervals)
+            if current_status_mode == Mode.WAVE:
+                if self.debug:
+                    print(f"Updating wave intervals to: {settings.wave_intervals}")
+                current_app.status_manager.wave_intervals = float(settings.wave_intervals)
+            if current_status_mode == Mode.SCATTER:
+                if self.debug:
+                    print(f"Updating scatter intervals to: {settings.scatter_intervals}")
+                current_app.status_manager.scatter_intervals = float(settings.scatter_intervals)
 
         except Exception as e:
             if self.debug:
@@ -107,7 +115,10 @@ class SettingsManager:
                 brightness=settings["brightness"],
                 statuses=[Status(**status) for status in settings["statuses"]],
                 version=settings["version"],
-                flashing_intervals=settings["flashing_intervals"]
+                flashing_intervals=settings["flashing_intervals"],
+                wave_intervals=settings["wave_intervals"],
+                scatter_intervals=settings["scatter_intervals"],
+                default_mode=Mode[settings.get("default_mode", "SOLID").upper()]
             )
         except KeyError as e:
             raise ValueError(f"Missing required setting: {e}")

@@ -19,6 +19,8 @@
     </div>
 </div>
 
+<hr>
+
 <!-- Bootstrap Slider Control -->
 <div class="row mt-4">
     <div class="col-md-12">
@@ -30,16 +32,7 @@
     </div>
 </div>
 
-<!-- Flashing Interval -->
-<div class="row mt-4">
-    <div class="col-md-12">
-        <h3>Flashing Intervals (Seconds)</h3>
-        <div class="d-flex align-items-center">
-            <input type="number" class="form-control" id="flashingIntervals" min="0.5" max="60" step="1" value="{{ settings.flashing_intervals }}">
-        </div>
-    </div>
-</div>
-<!-- End Flashing Interval -->
+<hr>
 
 <div class="row mt-4">
     <div class="col-md-12">
@@ -81,6 +74,53 @@
         {% endfor %}
     </div>
 </div>
+
+<hr>
+
+<!-- Mode Settings -->
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h3>Mode Settings</h3>
+    </div>
+
+    <div class="col-md-12 my-1">
+        <div class="mb-1">
+          <strong>Default</strong>  
+        </div>
+        
+        <div class="btn-group mt-3 mb-4" role="group" aria-label="Mode selection">
+            {% for _mode in  modes %}
+            <input type="radio" class="btn-check defaultMode" name="mode" id="mode-{{ _mode | lower }}" value="{{ _mode | lower }}" autocomplete="off"
+                {% if settings.default_mode.name == _mode.upper() %}checked{% endif %}>
+            <label class="btn btn-outline-primary" for="mode-{{ _mode | lower }}">{{ _mode }}</label>
+            {% endfor %}
+        </div>
+
+    <div class="col-md-12 my-1">
+        <strong>Flashing Intervals (Seconds)</strong>
+        <div class="d-flex align-items-center">
+            <input type="number" class="form-control" id="flashingIntervals" min="0.05" max="60" step="1" value="{{ settings.flashing_intervals }}">
+        </div>
+    </div>
+
+    <div class="col-md-12 my-1">
+        <strong>Wave Intervals (Seconds)</strong>
+        <div class="d-flex align-items-center">
+            <input type="number" class="form-control" id="waveIntervals" min="0.02" max="30" step="1" value="{{ settings.wave_intervals }}">
+        </div>
+    </div>
+
+    <div class="col-md-12 my-1">
+        <strong>Scatter Intervals (Seconds)</strong>
+        <div class="d-flex align-items-center">
+            <input type="number" class="form-control" id="scatterIntervals" min="0.02" max="20" step="1" value="{{ settings.scatter_intervals }}">
+        </div>
+    </div>
+
+</div>
+
+<!-- Mode Settings -->
 
 <!-- Add Status Modal -->
 <div class="modal fade" id="addStatusModal" tabindex="-1" aria-labelledby="addStatusModalLabel" aria-hidden="true">
@@ -354,9 +394,13 @@
             brightness: $('#brightnessSlider').val(),
             statuses: [],
             version: SETTINGS_VERSION,
-            flashing_intervals: flashing_intervals
+            flashing_intervals: flashing_intervals,
+            wave_intervals: $('#waveIntervals').val(),
+            scatter_intervals: $('#scatterIntervals').val(),
+            default_mode: $('.defaultMode:checked').val() 
         };
 
+        console.log(settings);
         $('.status-setting-item').each(function () {
             var id = $(this).data('status-id');
             var name = $(this).data('name');

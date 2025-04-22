@@ -7,8 +7,9 @@ def settings():
 
     available_statuses = current_app.status_manager.get_available_statuses()
     settings = current_app.settings_manager.get_settings()
+    modes = current_app.status_manager.get_mode_list()
 
-    return render_template('settings.html',available_statuses = available_statuses, settings = settings)
+    return render_template('settings.html',available_statuses = available_statuses, settings = settings, modes = modes)
 
 @bp.route('/settings/update/settings', methods=['POST'])
 def update_settings():
