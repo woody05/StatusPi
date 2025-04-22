@@ -67,6 +67,8 @@ class StatusManager:
         return [mode.name for mode in Mode]
 
     def _stop_status_mode_task(self):
+        if self.debug:
+            print("Stopping status mode task...")
          # if we have a task running, stop it
         if self.status_mode_task_thread and self.status_mode_task_thread.is_alive():
             self.status_mode_task_stop_event.set()
