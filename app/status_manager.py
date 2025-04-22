@@ -71,9 +71,9 @@ class StatusManager:
          # if we have a task running, stop it
         if self.status_mode_task_thread and self.status_mode_task_thread.is_alive():
             self.status_mode_task_stop_event.set()
-            if threading.current_thread() != self.status_mode_task_thread:
-                self.status_mode_task_thread.join()
-                if self.debug:
+            # if threading.current_thread() != self.status_mode_task_thread:
+            self.status_mode_task_thread.join()
+            if self.debug:
                     print("Status mode task stopped.")
 
     def status_mode_background_task(self, action):
