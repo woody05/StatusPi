@@ -92,8 +92,8 @@ class StatusManager:
             raise
 
     def set_status_mode(self, mode=None):
-        if self.mode == mode:
-            return
+        # if self.mode == mode:
+        #     return
 
         # Stop the existing thread if it's running
         self._stop_status_mode_task()
