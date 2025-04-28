@@ -1,31 +1,31 @@
+import board
+import busio
 from adafruit_ina219 import INA219
-from smbus2 import SMBus
+
 
 class INA219Manager:
     def __init__(self, settings_manager=None):
         self.debug = False
         self.settings_manager = settings_manager  # Injected dependency
 
-        self.i2c_bus = None
-        self.ina219 = None
+        self.i2c = None
+        self.sensor = None
 
     def init_app(self, app, **kwargs):
         app.ina219_manager = self
         self.debug = kwargs.get('debug', self.debug)
         self.settings_manager = app.settings_manager
 
-        # Initialize I2C bus and INA219 sensor
-        self.i2c_bus = SMBus(1)
-        self.ina219 = INA219(self.i2c_bus)
+        # Initialize I2C with CircuitPython
+        self.i2c = busio.I2C(board.SCL, board.SDA)
+
+        self.sensor = INA219(self.i2c)
 
         #Configure INA219
         self.ina219.configure()
 
-    def read_battery_parameters(self):
-        voltage = self.ina219.bus_voltage  # Voltage in volts
-        current = self.ina219.current / 1000  # Current in amperes
-        power = self.ina219.power / 1000  # Power in watts
-        return voltage, current, power
+    def read_battery_voltage(self):
+        return self.sensor.bus_voltage
 
     def estimate_battery_percentage(self):
         """Estimate battery percentage based on voltage.
@@ -35,7 +35,7 @@ class INA219Manager:
         if self.debug:
             print("Reading battery parameters...")
 
-        voltage, _, _ = self.read_battery_parameters()
+        voltage, _, _ = self.read_battery_voltage()
 
         if self.debug:
             print(f"Voltage: {voltage} V")
