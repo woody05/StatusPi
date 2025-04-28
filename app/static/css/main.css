@@ -43,3 +43,44 @@
     padding: 0.55em 1em; /* Optional: Add padding for spacing */
     background-color: #fff;
 }
+
+/* battery.css */
+.battery-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.battery {
+    position: relative;
+    width: 50px;
+    height: 20px;
+    border: 2px solid #000;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    overflow: hidden;
+}
+
+.battery::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    right: -6px;
+    width: 4px;
+    height: 10px;
+    background-color: #000;
+    border-radius: 1px;
+}
+
+.battery-level {
+    height: 100%;
+    background-color: #4caf50; /* Green for charged */
+    transition: width 0.3s ease;
+}
+
+.battery-percentage-text {
+    font-size: 14px;
+    font-weight: bold;
+}

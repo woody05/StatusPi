@@ -12,8 +12,16 @@
 <div class="mb-2">
     <div class="row">
         <div class="col-md-12">
-            <p><strong>Status: </strong> <span class="badge rounded-pill current-status py-1 px-3 ms-1"
+            <div class="d-flex justify-content-between">
+                <p><strong>Status: </strong> <span class="badge rounded-pill current-status py-1 px-3 ms-1"
                     style="color: #000;background-color: {{ status.color }}">{{ status.name }}</span></p>
+                <div class="battery-container">
+                    <div class="battery">
+                        <div class="battery-level" style="width: 0%;"></div>
+                    </div>
+                    <span class="battery-percentage-text">0%</span>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -52,6 +60,8 @@
 
     $(function () {
         Status.changeMode(MODE);
+        fetchBatteryPercentage(); // Initial fetch
+        setInterval(fetchBatteryPercentage, 30000); // Fetch every 30 seconds
     });
 
     // function to update the status
@@ -69,6 +79,30 @@
         Status.changeMode(mode);
     });
     // end function to update the mode
+
+    function fetchBatteryPercentage() {
+        $.ajax({
+            url: '/battery/percentage',
+            method: 'GET',
+            success: function (response) {
+                if (response.battery_percentage !== undefined) {
+                    updateBatteryLevel(response.battery_percentage);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Failed to fetch battery percentage:", error);
+            }
+        });
+    }
+
+    // function to update the battery level
+    function updateBatteryLevel(level) {
+        var batteryLevel = $('.battery-level');
+        var batteryPercentageText = $('.battery-percentage-text');
+
+        batteryLevel.css('width', level + '%');
+        batteryPercentageText.text(level + '%');
+    }
 
 </script>
 {% endblock %}
