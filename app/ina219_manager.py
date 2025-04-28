@@ -19,7 +19,7 @@ class INA219Manager:
         # Initialize I2C with CircuitPython
         self.i2c = busio.I2C(board.SCL, board.SDA)
 
-        self.sensor = INA219(self.i2c)
+        self.sensor = INA219(self.i2c, address=3x43) 
 
         #Configure INA219
         self.ina219.configure()
