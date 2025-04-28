@@ -19,10 +19,11 @@ class INA219Manager:
         # Initialize I2C with CircuitPython
         self.i2c = busio.I2C(board.SCL, board.SDA)
 
-        self.sensor = INA219(self.i2c, address=0x43) 
+        # Create the sensor object without passing an address
+        self.sensor = INA219(self.i2c)
 
-        #Configure INA219
-        self.ina219.configure()
+        # Manually set the address to 0x43 using the device's address setter method
+        self.sensor._address = 0x43  # Set the address
 
     def read_battery_voltage(self):
         return self.sensor.bus_voltage
