@@ -205,9 +205,12 @@ class INA219Manager:
         return value * self._power_lsb
     
     def getPowerPercent(self):
-        bus_voltage = self.getBusVoltage_V()
-        p = (bus_voltage - 3)/1.2*100
-        if(p > 100):p = 100
-        if(p < 0):p = 0
+        try:
+            bus_voltage = self.getBusVoltage_V()
+            p = (bus_voltage - 3)/1.2*100
+            if(p > 100):p = 100
+            if(p < 0):p = 0
+        except Exception as e:
+            print(e)
 
         return p
