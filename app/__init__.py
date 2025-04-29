@@ -19,7 +19,7 @@ def create_app():
     settings_manager.init_app(app, debug=True)
     rpi_ws281x_manager.init_app(app, debug=True)
     status_manager.init_app(app, debug=True)
-    ina219_manager.init_app(app, debug=True)
+    ina219_manager.init_app(app, addr=0x43, debug=True)
 
     app.register_blueprint(status_view.bp)
     app.register_blueprint(settings_view.bp)
