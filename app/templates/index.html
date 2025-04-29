@@ -97,6 +97,7 @@
 
     // function to update the battery level
     function updateBatteryLevel(level) {
+        level = Math.round(level); // Round to the nearest integer
         var batteryLevel = $('.battery-level');
         var batteryPercentageText = $('.battery-percentage-text');
 
