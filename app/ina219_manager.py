@@ -63,12 +63,6 @@ class INA219Manager:
         self.bus = smbus.SMBus(i2c_bus);
         self.addr = addr
 
-        # Set chip to known config values to start
-        self._cal_value = 0
-        self._current_lsb = 0
-        self._power_lsb = 0
-        self.set_calibration_16V_5A()
-
     def init_app(self, app, i2c_bus=1, addr=0x40, **kwargs):
         app.ina219_manager = self
         self.debug = kwargs.get('debug', self.debug)
@@ -77,11 +71,11 @@ class INA219Manager:
         self.bus = smbus.SMBus(i2c_bus);
         self.addr = addr
 
-        # # Set chip to known config values to start
-        # self._cal_value = 0
-        # self._current_lsb = 0
-        # self._power_lsb = 0
-        # self.set_calibration_16V_5A()
+        # Set chip to known config values to start
+        self._cal_value = 0
+        self._current_lsb = 0
+        self._power_lsb = 0
+        self.set_calibration_16V_5A()
 
     def read(self,address):
         data = self.bus.read_i2c_block_data(self.addr, address, 2)
