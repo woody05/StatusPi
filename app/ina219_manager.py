@@ -64,10 +64,10 @@ class INA219Manager:
         self.addr = addr
 
         # Set chip to known config values to start
-        self._cal_value = 0
-        self._current_lsb = 0
-        self._power_lsb = 0
-        self.set_calibration_16V_5A()
+        # self._cal_value = 0
+        # self._current_lsb = 0
+        # self._power_lsb = 0
+        # self.set_calibration_16V_5A()
 
     def init_app(self, app, i2c_bus=1, addr=0x40, **kwargs):
         app.ina219_manager = self
@@ -166,7 +166,7 @@ class INA219Manager:
         # Set Calibration register to 'Cal' calculated above
         self.write(_REG_CALIBRATION,self._cal_value)
 
-        # Set Config register to take into account the settings above
+        # Set Config reg sudo apt-get install python3-smbusister to take into account the settings above
         self.bus_voltage_range = BusVoltageRange.RANGE_16V
         self.gain = Gain.DIV_2_80MV
         self.bus_adc_resolution = ADCResolution.ADCRES_12BIT_32S
