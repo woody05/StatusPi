@@ -8,7 +8,7 @@ def battery_percentage_view():
     View function to get the battery percentage.
     """
     try:
-        battery_percentage = current_app.ina219_manager.estimate_battery_percentage()
+        battery_percentage = current_app.ina219_manager.getPowerPercent()
 
         return jsonify({"battery_percentage": battery_percentage}), 200
     
