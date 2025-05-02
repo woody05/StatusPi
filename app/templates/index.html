@@ -57,7 +57,7 @@
 <script>
 
     const MODE = {{ mode.name | tojson }};
-    const CHECK_BATTERY_INTERVAL = 300000;
+    const CHECK_BATTERY_INTERVAL = 300000; // 5 minutes in milliseconds
 
     $(function () {
         Status.changeMode(MODE);
