@@ -27,7 +27,4 @@ app/app_settings.json
 /.env
 /env
 
-/.flaskenv
-/flaskenv
-
 log.db
