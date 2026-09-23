@@ -9,9 +9,12 @@ export function ModeControls({ isDarkMode }) {
     const [mode, setMode] = useState(null);
     const [modes, setModes] = useState([]);
     const [activeMode, setActiveMode] = useState('');
-    const [loading, setLoading] = useState(true);
+    const [modesLoaded, setModesLoaded] = useState(false);
+    const [modeLoaded, setModeLoaded] = useState(false);
+    const [connectionError, setConnectionError] = useState(false);
 
     const theme = getThemeStyles(isDarkMode);
+    const loading = !modesLoaded || !modeLoaded;
 
     const getModeIcon = (modeStr) => {
         const mode = String(modeStr).toUpperCase();
@@ -38,6 +41,8 @@ export function ModeControls({ isDarkMode }) {
             .join(' ');
     };
 
+    // One-time fetch: the list of available modes. The stream only carries
+    // the currently-active mode, not the full list of options.
     useEffect(() => {
         fetch('/api/modes')
             .then((res) => {
@@ -47,41 +52,48 @@ export function ModeControls({ isDarkMode }) {
             .then((data) => {
                 const modeList = Array.isArray(data) ? data : (data.modes || []);
                 setModes(modeList);
-
-                if (data.active) {
-                    setActiveMode(data.active);
-                } else if (modeList.length > 0) {
-                    setActiveMode(modeList[0]);
-                }
-                setLoading(false);
+                setModesLoaded(true);
             })
             .catch((err) => {
                 console.error('API Error:', err);
                 setModes([]);
-                setLoading(false);
+                setModesLoaded(true);
             });
+    }, []);
 
-        const fetchMode = () => {
-            fetch('/api/mode')
-                .then((res) => {
-                    if (!res.ok) throw new Error('Failed to fetch mode data');
-                    return res.json();
-                })
-                .then((data) => {
-                    setMode(data);
-                    const currentMode = typeof data === 'string' ? data : (data?.mode || data?.active);
-                    if (currentMode) setActiveMode(currentMode);
-                    setLoading(false);
-                })
-                .catch((err) => {
-                    console.error('API Error:', err);
-                    setLoading(false);
-                });
+    // Live stream: current active mode. Payload shape isn't confirmed yet,
+    // so this accepts either a bare string ("RAINBOW") or an object
+    // ({ mode: "RAINBOW" } / { active: "RAINBOW" }).
+    useEffect(() => {
+        const eventSource = new EventSource('/api/mode/stream');
+
+        const handleEvent = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                setMode(data);
+
+                const currentMode = typeof data === 'string'
+                    ? data
+                    : (data?.mode || data?.active);
+
+                if (currentMode) setActiveMode(currentMode);
+            } catch (err) {
+                console.error('Failed to parse mode stream event:', err);
+            } finally {
+                setModeLoaded(true);
+                setConnectionError(false);
+            }
         };
 
-        fetchMode();
-        const intervalId = setInterval(fetchMode, 1000);
-        return () => clearInterval(intervalId);
+        eventSource.onmessage = handleEvent;
+        eventSource.onerror = (err) => {
+            console.error('Mode stream error:', err);
+            setConnectionError(true);
+        };
+
+        return () => {
+            eventSource.close();
+        };
     }, []);
 
     const handleSelectMode = async (modeStr) => {
@@ -136,7 +148,7 @@ export function ModeControls({ isDarkMode }) {
                         Display Modes
                     </h6>
                     <span class="badge rounded-pill fw-semibold" style="font-size: 0.7rem; background-color: ${isDarkMode ? 'rgba(255,255,255,0.08)' : '#e2e8f0'}; color: ${isDarkMode ? '#cbd5e1' : '#334155'};">
-                        Pattern Select
+                        ${connectionError ? 'Reconnecting…' : 'Pattern Select'}
                     </span>
                 </div>
 

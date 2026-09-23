@@ -9,9 +9,12 @@ export function StatusControls({ isDarkMode }) {
     const [status, setStatus] = useState({ id: null, name: "Unknown", color: "#6c757d" });
     const [statuses, setStatuses] = useState([]);
     const [activeId, setActiveId] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [statusesLoaded, setStatusesLoaded] = useState(false);
+    const [statusLoaded, setStatusLoaded] = useState(false);
+    const [connectionError, setConnectionError] = useState(false);
 
     const theme = getThemeStyles(isDarkMode);
+    const loading = !statusesLoaded || !statusLoaded;
 
     const getAccessibleColor = (colorHex) => {
         if (isDarkMode || !colorHex) return colorHex || '#0d6efd';
@@ -24,52 +27,54 @@ export function StatusControls({ isDarkMode }) {
         return brightness > 180 ? '#d97706' : colorHex;
     };
 
+    // One-time fetch: the list of available statuses. The stream doesn't
+    // carry this, only the currently-active status.
     useEffect(() => {
         fetch('/api/statuses')
             .then((res) => {
-                if (!res.ok) throw new Error('Failed to fetch status data');
+                if (!res.ok) throw new Error('Failed to fetch statuses list');
                 return res.json();
             })
             .then((data) => {
                 const list = Array.isArray(data) ? data : (data.statuses || []);
                 setStatuses(list);
-
-                if (data.activeId !== undefined) {
-                    setActiveId(data.activeId);
-                } else {
-                    const activeItem = list.find((item) => item.state === true);
-                    setActiveId(activeItem ? activeItem.id : (list[0]?.id || null));
-                }
-                setLoading(false);
+                setStatusesLoaded(true);
             })
             .catch((err) => {
                 console.error('API Error:', err);
                 setStatuses([]);
-                setLoading(false);
+                setStatusesLoaded(true);
             });
+    }, []);
 
-        const fetchStatus = () => {
-            fetch('/api/status')
-                .then((res) => {
-                    if (!res.ok) throw new Error('Failed to fetch status data');
-                    return res.json();
-                })
-                .then((data) => {
+    // Live stream: current active status, e.g. {"id":6,"name":"Away","color":"rgb(255,255,0)"}
+    useEffect(() => {
+        const eventSource = new EventSource('/api/status/stream');
+
+        const handleEvent = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                if (data && data.id !== undefined && data.id !== null) {
                     setStatus(data);
-                    if (data && data.id !== undefined && data.id !== null) {
-                        setActiveId(data.id);
-                    }
-                    setLoading(false);
-                })
-                .catch((err) => {
-                    console.error('API Error:', err);
-                    setLoading(false);
-                });
+                    setActiveId(data.id);
+                }
+            } catch (err) {
+                console.error('Failed to parse status stream event:', err);
+            } finally {
+                setStatusLoaded(true);
+                setConnectionError(false);
+            }
         };
 
-        fetchStatus();
-        const intervalId = setInterval(fetchStatus, 1000);
-        return () => clearInterval(intervalId);
+        eventSource.onmessage = handleEvent;
+        eventSource.onerror = (err) => {
+            console.error('Status stream error:', err);
+            setConnectionError(true);
+        };
+
+        return () => {
+            eventSource.close();
+        };
     }, []);
 
     const handleSelectStatus = async (id) => {
@@ -124,7 +129,7 @@ export function StatusControls({ isDarkMode }) {
                         Statuses
                     </h6>
                     <span class="badge rounded-pill fw-semibold" style="font-size: 0.7rem; background-color: ${isDarkMode ? 'rgba(255,255,255,0.08)' : '#e2e8f0'}; color: ${isDarkMode ? '#cbd5e1' : '#334155'};">
-                        ${statuses.length} Channels
+                        ${connectionError ? 'Reconnecting…' : `${statuses.length} Channels`}
                     </span>
                 </div>
 

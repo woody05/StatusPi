@@ -5,28 +5,53 @@ import { getThemeStyles } from '../theme.js';
 
 const html = htm.bind(h);
 
+// How long to ignore incoming stream values after a local change, so the
+// slider doesn't jump/fight the user while they're dragging it (their own
+// POST hasn't round-tripped back through the stream yet).
+const LOCAL_CHANGE_GUARD_MS = 1000;
+
 export function BrightnessSettingsControls({ isDarkMode }) {
   const theme = getThemeStyles(isDarkMode);
   const [brightness, setBrightness] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [connectionError, setConnectionError] = useState(false);
   const timeoutRef = useRef(null);
+  const lastLocalChangeRef = useRef(0);
 
   useEffect(() => {
-    fetch('/api/brightness')
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch brightness data');
-        return res.json();
-      })
-      .then((data) => {
-        const val = typeof data === 'object' && data !== null ? (data.value ?? 0) : Number(data);
+    const eventSource = new EventSource('/api/brightness/stream');
+
+    const handleEvent = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        const val = typeof data === 'object' && data !== null
+          ? (data.value ?? data.brightness ?? 0)
+          : Number(data);
+
+        // Skip applying this update if the user just changed the slider
+        // locally and we're still waiting for their own write to settle.
+        if (Date.now() - lastLocalChangeRef.current < LOCAL_CHANGE_GUARD_MS) {
+          return;
+        }
+
         setBrightness(isNaN(val) ? 0 : val);
+      } catch (err) {
+        console.error('Failed to parse brightness stream event:', err);
+      } finally {
         setLoading(false);
-      })
-      .catch((err) => {
-        console.error('API Error:', err);
-        setBrightness(0);
-        setLoading(false);
-      });
+        setConnectionError(false);
+      }
+    };
+
+    eventSource.onmessage = handleEvent;
+    eventSource.onerror = (err) => {
+      console.error('Brightness stream error:', err);
+      setConnectionError(true);
+    };
+
+    return () => {
+      eventSource.close();
+    };
   }, []);
 
   const sendBrightnessUpdate = (newValue) => {
@@ -49,11 +74,13 @@ export function BrightnessSettingsControls({ isDarkMode }) {
 
   const handleBrightnessChange = (e) => {
     const newValue = parseInt(e.target.value, 10);
+    lastLocalChangeRef.current = Date.now();
     setBrightness(newValue);
     sendBrightnessUpdate(newValue);
   };
 
   const handlePresetClick = (val) => {
+    lastLocalChangeRef.current = Date.now();
     setBrightness(val);
     sendBrightnessUpdate(val);
   };
@@ -147,7 +174,7 @@ export function BrightnessSettingsControls({ isDarkMode }) {
               LED Brightness
             </h6>
             <span class="badge rounded-pill fw-bold px-2.5 py-1" style="font-size: 0.75rem; background-color: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3);">
-              ${brightness}%
+              ${connectionError ? 'Reconnecting…' : `${brightness}%`}
             </span>
           </div>
 
