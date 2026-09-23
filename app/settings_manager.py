@@ -55,7 +55,7 @@ class SettingsManager:
             if self.debug:
                 print("Creating default settings file.")
 
-            self.update_settings(DEFAULT_SETTINGS_V1)
+            #self.update_settings(DEFAULT_SETTINGS_V1)
 
             return DEFAULT_SETTINGS_V1
         

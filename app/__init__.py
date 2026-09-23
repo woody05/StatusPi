@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from flask import Flask
-from app.settings_manager import SettingsManager
+#from app.settings_manager import SettingsManager
 from app.status_manager import StatusManager
 from app.rpi_ws281x_manager import RPIWS281XManager
 from app.ina219_manager import INA219Manager
@@ -25,7 +25,7 @@ def create_app():
     logDb = os.getenv("LOG_DB")
 
     # Instantiate managers inside the factory
-    settings_manager = SettingsManager()
+    #settings_manager = SettingsManager()
     status_manager = StatusManager()
     rpi_ws281x_manager = RPIWS281XManager()
     logger = Logger()
@@ -40,7 +40,7 @@ def create_app():
         DatabaseManager.seed_database()
 
     logger.init_app(app, logDb)
-    settings_manager.init_app(app, debug=True)
+    #settings_manager.init_app(app, debug=True)
     rpi_ws281x_manager.init_app(app, debug=True)
     status_manager.init_app(app, debug=True)
     log_reader.init_app(app, logDb)
