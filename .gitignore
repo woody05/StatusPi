@@ -28,7 +28,4 @@ app/app_settings.json
 /.venv
 /venv
 
-/.env
-/env
-
 log.db
