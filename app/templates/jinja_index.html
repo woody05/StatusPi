@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/status.js') }}"></script>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="mb-2">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between">
+                <p><strong>Status: </strong> <span class="badge rounded-pill current-status py-1 px-3 ms-1"
+                    style="color: #000;background-color: {{ status.color }}">{{ status.name }}</span></p>
+                <div class="battery-container">
+                    <div class="battery">
+                        <div class="battery-level" style="width: 0%;"></div>
+                    </div>
+                    <span class="battery-percentage-text">0%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mb-3">
+    <div class="row">
+        <div class="col-md-12">
+            <p><strong>Mode:</strong></p>
+            <div class="btn-group" role="group" aria-label="Mode selection">
+                {% for _mode in modes %}
+                <input type="radio" class="btn-check" name="mode" id="mode-{{ _mode | lower }}" value="{{ _mode | lower }}" autocomplete="off"
+                    {% if mode.name == _mode.upper() %}checked{% endif %}>
+                <label class="btn btn-outline-primary" for="mode-{{ _mode | lower }}">{{ _mode }}</label>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    {% for status in available_statuses %}
+    <div class="col-md-4">
+        <div class="d-flex justify-content-center align-items-center">
+            <button class="btn btn-status update-status w-100 my-2" id="status-{{ status.id }}"
+                style="background-color: {{status.color}};" data-status-id="{{ status.id }}">{{status.name
+                }}</button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+
+    const MODE = {{ mode.name | tojson }};
+    const CHECK_BATTERY_INTERVAL = 300000; // 5 minutes in milliseconds
+
+    $(function () {
+        Status.changeMode(MODE);
+        fetchBatteryPercentage(); // Initial fetch
+        setInterval(fetchBatteryPercentage, CHECK_BATTERY_INTERVAL); // Fetch every 30 seconds
+    });
+
+    // function to update the status
+    $('.update-status').on('click', function () {
+        var statusId = $(this).data('status-id');
+
+        Status.updateStatus('.current-status', statusId);
+    });
+    // end function to update the status
+
+    // function to update the mode
+    $('input[name="mode"]').on('change', function () {
+        var mode = $(this).val();
+
+        Status.changeMode(mode);
+    });
+    // end function to update the mode
+
+    function fetchBatteryPercentage() {
+        $.ajax({
+            url: '/battery/percentage',
+            method: 'GET',
+            success: function (response) {
+                if (response.battery_percentage !== undefined) {
+                    updateBatteryLevel(response.battery_percentage);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Failed to fetch battery percentage:", error);
+            }
+        });
+    }
+
+    // function to update the battery level
+    function updateBatteryLevel(level) {
+        level = Math.round(level); // Round to the nearest integer
+        var batteryLevel = $('.battery-level');
+        var batteryPercentageText = $('.battery-percentage-text');
+
+        batteryLevel.css('width', level + '%');
+        batteryPercentageText.text(level + '%');
+    }
+
+</script>
+{% endblock %}

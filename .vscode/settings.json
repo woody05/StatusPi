@@ -1,1 +1,17 @@
-{}
+{
+    "sqltools.useNodeRuntime": true,
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "logs",
+            "database": "log.db"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "Settings",
+            "database": "sqlite:///app_settings.db"
+        }
+    ]
+}

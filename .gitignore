@@ -17,3 +17,17 @@
 /app/models/__pycache__
 
 app/app_settings.json
+
+/.node_modules
+/node_modules
+
+/.venv
+/venv
+
+/.env
+/env
+
+/.flaskenv
+/flaskenv
+
+log.db

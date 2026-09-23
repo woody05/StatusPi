@@ -1,5 +1,33 @@
-import smbus
+import os
 import time
+from flask import current_app
+
+ENV = os.getenv("APP_ENV", "development")
+
+if ENV != "development":
+    try:
+        import smbus
+    except ImportError:
+        # Fallback if binary bindings are missing
+        ENV = "development"
+
+if ENV == "development":
+    class SMBusMock:
+        def __init__(self, bus=None):
+            pass
+
+        def read_i2c_block_data(self, addr, cmd, length):
+            # Return dummy 16-bit word data [MSB, LSB]
+            # Simulated voltage/current readings for development
+            if cmd == 0x02:  # _REG_BUSVOLTAGE
+                return [0x10, 0x00]  # Simulates ~12.28V
+            return [0x00, 0x00]
+
+        def write_i2c_block_data(self, addr, cmd, vals):
+            pass
+
+    # Assign mock to namespace
+    smbus = type('smbus', (), {'SMBus': SMBusMock})()
 
 # Config Register (R/W)
 _REG_CONFIG                 = 0x00
@@ -197,7 +225,7 @@ class INA219Manager:
         if value > 32767:
             value -= 65535
         return value * self._power_lsb
-    
+
     def getPowerPercent(self):
         try:
             bus_voltage = self.getBusVoltage_V()

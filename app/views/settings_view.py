@@ -24,8 +24,8 @@ def update_settings():
 
     return jsonify({"status": "success"}), 200
 
-@bp.route('api/settings', methods=['GET'])
-def get_settings():
+# @bp.route('/api/settings', methods=['GET'])
+# def get_settings():
 
-    settings = current_app.settings_manager.get_settings()
-    return jsonify(settings), 200
+#     settings = current_app.settings_manager.get_settings()
+#     return jsonify(settings), 200
