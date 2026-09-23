@@ -84,3 +84,73 @@
     font-size: 14px;
     font-weight: bold;
 }
+
+.glow-range-input {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 100%;
+          height: 12px;
+          border-radius: 999px;
+          outline: none;
+          box-shadow: ${isDarkMode
+? 'inset 0 2px 4px rgba(0,0,0,0.6)'
+: 'inset 0 1px 3px rgba(0,0,0,0.1)'};
+        }
+
+        .glow-range-input::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background: #ffffff;
+          border: 3px solid #3b82f6;
+          cursor: pointer;
+          box-shadow: 0 0 12px rgba(59, 130, 246, 0.7);
+          transition:
+            transform 0.15s ease-in-out,
+            box-shadow 0.15s ease-in-out;
+        }
+
+        .glow-range-input::-webkit-slider-thumb:hover,
+        .glow-range-input::-webkit-slider-thumb:active {
+          transform: scale(1.2);
+          box-shadow: 0 0 18px rgba(59, 130, 246, 1);
+        }
+
+        .glow-range-input::-moz-range-thumb {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background: #ffffff;
+          border: 3px solid #3b82f6;
+          cursor: pointer;
+          box-shadow: 0 0 12px rgba(59, 130, 246, 0.7);
+          transition:
+            transform 0.15s ease-in-out,
+            box-shadow 0.15s ease-in-out;
+        }
+
+        .glow-range-input::-moz-range-thumb:hover,
+        .glow-range-input::-moz-range-thumb:active {
+          transform: scale(1.2);
+          box-shadow: 0 0 18px rgba(59, 130, 246, 1);
+        }
+
+        .settings-content-tight > * {
+          margin-top: 0.5rem !important;
+          margin-bottom: 0.5rem !important;
+        }
+
+        @media (max-width: 768px) {
+          .settings-layout {
+            flex-direction: column;
+          }
+          .settings-nav {
+            width: 100% !important;
+            min-width: 100% !important;
+            flex-direction: row !important;
+            overflow-x: auto;
+            border-right: none !important;
+          }
+        }
