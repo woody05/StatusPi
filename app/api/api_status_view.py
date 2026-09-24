@@ -6,35 +6,107 @@ import time
 bp = Blueprint('status api', __name__)
 
 
-@bp.route('/api/status', methods=['GET', 'POST'])
-def status():
+@bp.route('/api/status', methods=['GET'])
+def get_status():
+    """Get current status.
+    ---
+    summary: Get current status
+    responses:
+      "200":
+        description: Current status object
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            value:
+              type: string
+    """
+    return jsonify(current_app.status_manager.status.to_dict()), 200
 
-    if request.method == 'POST':
-        data = request.get_json()
 
-        if not data:
-            return jsonify({"error": "Invalid data"}), 400
+@bp.route('/api/status', methods=['POST'])
+def set_status():
+    """Set current status by ID.
+    ---
+    summary: Set status
+    consumes:
+      - application/json
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          required:
+            - id
+          properties:
+            id:
+              type: integer
+              description: The ID of the status to set
+    responses:
+      "200":
+        description: Status updated successfully
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            value:
+              type: string
+      "400":
+        description: Invalid or missing data
+      "404":
+        description: Status not found
+    """
+    data = request.get_json()
 
-        status_id = data.get("id")
+    if not data:
+        return jsonify({"error": "Invalid data"}), 400
 
-        if not status_id:
-            return jsonify({"error": "Invalid data"}), 400
+    status_id = data.get("id")
 
-        print(f"id {status_id}")
+    if not status_id:
+        return jsonify({"error": "Invalid data"}), 400
 
-        status = current_app.status_manager.get_available_status_by_id(status_id)
+    print(f"id {status_id}")
 
-        if status is None:
-            return jsonify({"error": "Status not found"}), 404
+    status = current_app.status_manager.get_available_status_by_id(status_id)
 
-        current_app.status_manager.set_status(status)
+    if status is None:
+        return jsonify({"error": "Status not found"}), 404
+
+    current_app.status_manager.set_status(status)
 
     return jsonify(current_app.status_manager.status.to_dict()), 200
 
 
 @bp.route('/api/statuses', methods=['GET'])
 def statuses():
-
+    """Get all available statuses.
+    ---
+    summary: Get all available statuses
+    responses:
+      "200":
+        description: List of all available statuses
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              value:
+                type: string
+      "500":
+        description: Internal server error
+    """
     try:
         available_statuses = current_app.status_manager.get_available_statuses()
 
@@ -60,7 +132,16 @@ def statuses():
 
 @bp.route('/api/status/stream', methods=['GET'])
 def status_stream():
-
+    """Stream status updates.
+    ---
+    summary: Server-sent event stream of status changes
+    description: Emits the current status object as an SSE `data:` event every second.
+    responses:
+      "200":
+        description: text/event-stream of status values
+        schema:
+          type: string
+    """
     @stream_with_context
     def generate():
         while True:

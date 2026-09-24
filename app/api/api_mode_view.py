@@ -5,32 +5,88 @@ from app.status_manager import Mode
 
 bp = Blueprint('mode api', __name__)
 
-@bp.route('/api/mode', methods=['GET', 'POST'])
-def mode():
-    if request.method == 'POST':
-        data = request.get_json()
-
-        mode = data.get("mode", None)
-
-        print(f"Mode: {mode}")
-
-        if mode is None:
-            return jsonify({"error": "Invalid data"}), 400
-
-        try:
-            # Convert the mode string to the Mode enum
-            mode_enum = Mode[mode.upper()]  # Ensure case-insensitivity
-        except KeyError:
-            return jsonify({"error": f"Invalid mode: {mode}"}), 400
-
-        current_app.status_manager.set_status_mode(mode_enum)
-
-        return jsonify({"status": "success", "mode": current_app.status_manager.mode.name}), 200
-
+@bp.route('/api/mode', methods=['GET'])
+def get_mode():
+    """Get current operating mode.
+    ---
+    summary: Get current mode
+    responses:
+      "200":
+        description: Current mode value
+        schema:
+          type: object
+          properties:
+            mode:
+              type: string
+    """
     return jsonify({"mode": current_app.status_manager.mode.name}), 200
+
+@bp.route('/api/mode', methods=['POST'])
+def set_mode():
+    """Set current operating mode.
+    ---
+    summary: Set operating mode
+    consumes:
+      - application/json
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          required:
+            - mode
+          properties:
+            mode:
+              type: string
+              description: The target mode name
+    responses:
+      "200":
+        description: Mode updated successfully
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+            mode:
+              type: string
+      "400":
+        description: Invalid data or invalid mode string
+    """
+    data = request.get_json()
+
+    mode = data.get("mode", None) if data else None
+
+    print(f"Mode: {mode}")
+
+    if mode is None:
+        return jsonify({"error": "Invalid data"}), 400
+
+    try:
+        # Convert the mode string to the Mode enum
+        mode_enum = Mode[mode.upper()]  # Ensure case-insensitivity
+    except KeyError:
+        return jsonify({"error": f"Invalid mode: {mode}"}), 400
+
+    current_app.status_manager.set_status_mode(mode_enum)
+
+    return jsonify({"status": "success", "mode": current_app.status_manager.mode.name}), 200
 
 @bp.route('/api/modes', methods=['GET'])
 def statuses():
+    """Get all available operating modes.
+    ---
+    summary: Get list of all modes
+    responses:
+      "200":
+        description: List of available modes
+        schema:
+          type: array
+          items:
+            type: string
+      "500":
+        description: Failed to get modes
+    """
     try:
         modes = current_app.status_manager.get_mode_list()
 
@@ -41,7 +97,16 @@ def statuses():
 
 @bp.route('/api/mode/stream', methods=['GET'])
 def mode_stream():
-
+    """Stream operating mode updates.
+    ---
+    summary: Server-sent event stream of mode changes
+    description: Emits the current mode object as an SSE `data:` event every second.
+    responses:
+      "200":
+        description: text/event-stream of mode values
+        schema:
+          type: string
+    """
     @stream_with_context
     def generate():
         while True:

@@ -1,0 +1,800 @@
+{
+  "info": {
+    "version": "0.0.1",
+    "title": "A swagger API",
+    "description": "powered by Flasgger",
+    "termsOfService": "/tos"
+  },
+  "paths": {
+    "/api/status": {
+      "get": {
+        "summary": "Get current status.",
+        "responses": {
+          "200": {
+            "description": "Current status object",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "status api"
+        ]
+      },
+      "post": {
+        "summary": "Set current status by ID.",
+        "responses": {
+          "200": {
+            "description": "Status updated successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or missing data"
+          },
+          "404": {
+            "description": "Status not found"
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "id"
+              ],
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "description": "The ID of the status to set"
+                }
+              }
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "tags": [
+          "status api"
+        ]
+      }
+    },
+    "/api/statuses": {
+      "get": {
+        "summary": "Get all available statuses.",
+        "responses": {
+          "200": {
+            "description": "List of all available statuses",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "tags": [
+          "status api"
+        ]
+      }
+    },
+    "/api/status/stream": {
+      "get": {
+        "summary": "Stream status updates.",
+        "description": "Emits the current status object as an SSE `data:` event every second.",
+        "responses": {
+          "200": {
+            "description": "text/event-stream of status values",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "tags": [
+          "status api"
+        ]
+      }
+    },
+    "/api/mode": {
+      "get": {
+        "summary": "Get current operating mode.",
+        "responses": {
+          "200": {
+            "description": "Current mode value",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "mode api"
+        ]
+      },
+      "post": {
+        "summary": "Set current operating mode.",
+        "responses": {
+          "200": {
+            "description": "Mode updated successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "mode": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid data or invalid mode string"
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "description": "The target mode name"
+                }
+              }
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "tags": [
+          "mode api"
+        ]
+      }
+    },
+    "/api/modes": {
+      "get": {
+        "summary": "Get all available operating modes.",
+        "responses": {
+          "200": {
+            "description": "List of available modes",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to get modes"
+          }
+        },
+        "tags": [
+          "mode api"
+        ]
+      }
+    },
+    "/api/mode/stream": {
+      "get": {
+        "summary": "Stream operating mode updates.",
+        "description": "Emits the current mode object as an SSE `data:` event every second.",
+        "responses": {
+          "200": {
+            "description": "text/event-stream of mode values",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "tags": [
+          "mode api"
+        ]
+      }
+    },
+    "/api/brightness": {
+      "get": {
+        "summary": "Get current LED brightness.",
+        "responses": {
+          "200": {
+            "description": "Current brightness value",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "brightness": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 255
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "brightness_api"
+        ]
+      },
+      "post": {
+        "summary": "Set LED brightness.",
+        "responses": {
+          "200": {
+            "description": "Brightness set successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "brightness": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or missing brightness value"
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "brightness"
+              ],
+              "properties": {
+                "brightness": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 255,
+                  "description": "The target brightness level"
+                }
+              }
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "tags": [
+          "brightness_api"
+        ]
+      }
+    },
+    "/api/brightness/stream": {
+      "get": {
+        "summary": "Stream brightness updates.",
+        "description": "Emits the current brightness object as an SSE `data:` event every second.",
+        "responses": {
+          "200": {
+            "description": "text/event-stream of brightness values",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "tags": [
+          "brightness_api"
+        ]
+      }
+    },
+    "/api/settings/default/brightness": {
+      "get": {
+        "summary": "Get or update default brightness setting.",
+        "tags": [
+          "settings_api"
+        ]
+      },
+      "post": {
+        "summary": "Get or update default brightness setting.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "settings_api"
+        ]
+      }
+    },
+    "/api/settings/default/mode": {
+      "get": {
+        "summary": "Get or update default operating mode setting.",
+        "tags": [
+          "settings_api"
+        ]
+      },
+      "post": {
+        "summary": "Get or update default operating mode setting.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "settings_api"
+        ]
+      }
+    },
+    "/api/settings/mode/intervals/flash": {
+      "get": {
+        "summary": "Get or update flash interval setting.",
+        "tags": [
+          "settings_api"
+        ]
+      },
+      "post": {
+        "summary": "Get or update flash interval setting.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "settings_api"
+        ]
+      }
+    },
+    "/api/settings/mode/intervals/wave": {
+      "get": {
+        "summary": "Get or update wave interval setting.",
+        "tags": [
+          "settings_api"
+        ]
+      },
+      "post": {
+        "summary": "Get or update wave interval setting.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "settings_api"
+        ]
+      }
+    },
+    "/api/settings/mode/intervals/scatter": {
+      "get": {
+        "summary": "Get or update scatter interval setting.",
+        "tags": [
+          "settings_api"
+        ]
+      },
+      "post": {
+        "summary": "Get or update scatter interval setting.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "settings_api"
+        ]
+      }
+    },
+    "/api/settings/status/available": {
+      "get": {
+        "summary": "Get or update available status setting.",
+        "tags": [
+          "settings_api"
+        ]
+      },
+      "post": {
+        "summary": "Get or update available status setting.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "settings_api"
+        ]
+      }
+    },
+    "/api/settings/status/busy": {
+      "get": {
+        "summary": "Get or update busy status setting.",
+        "tags": [
+          "settings_api"
+        ]
+      },
+      "post": {
+        "summary": "Get or update busy status setting.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "settings_api"
+        ]
+      }
+    },
+    "/api/settings/status/away": {
+      "get": {
+        "summary": "Get or update away status setting.",
+        "tags": [
+          "settings_api"
+        ]
+      },
+      "post": {
+        "summary": "Get or update away status setting.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "settings_api"
+        ]
+      }
+    },
+    "/api/settings/status": {
+      "get": {
+        "summary": "GET all statuses or POST a new status to the Statuses group.",
+        "tags": [
+          "settings_api"
+        ]
+      },
+      "post": {
+        "summary": "GET all statuses or POST a new status to the Statuses group.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "name",
+                "setting_key",
+                "value"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "setting_key": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "settings_api"
+        ]
+      }
+    },
+    "/api/seed": {
+      "get": {
+        "summary": "Populate database with flat default settings mapped to 3 distinct groups.",
+        "responses": {
+          "200": {
+            "description": "Database seeded or already seeded"
+          }
+        },
+        "tags": [
+          "settings_api"
+        ]
+      }
+    },
+    "/api/settings": {
+      "get": {
+        "summary": "Fetch all settings groups with nested settings matching your structured JSON output.",
+        "responses": {
+          "200": {
+            "description": "List of groups with nested settings",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "tags": [
+          "settings_api"
+        ]
+      },
+      "post": {
+        "summary": "Create a new individual Setting.",
+        "responses": {
+          "201": {
+            "description": "Setting created successfully"
+          },
+          "400": {
+            "description": "Missing required fields or invalid value_type"
+          },
+          "404": {
+            "description": "Group ID not found"
+          },
+          "409": {
+            "description": "Setting key already exists"
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "name",
+                "setting_key",
+                "value",
+                "settings_group_id"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "setting_key": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                },
+                "settings_group_id": {
+                  "type": "integer"
+                },
+                "value_type": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "tags": [
+          "settings_api"
+        ]
+      }
+    },
+    "/api/settings/{key}": {
+      "get": {
+        "summary": "Fetch any single setting dynamically by key using to_dict().",
+        "responses": {
+          "200": {
+            "description": "Setting found",
+            "schema": {
+              "type": "object"
+            }
+          },
+          "404": {
+            "description": "Setting not found"
+          }
+        },
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Setting key identifier"
+          }
+        ],
+        "tags": [
+          "settings_api"
+        ]
+      }
+    },
+    "/api/groups/{group_id}": {
+      "delete": {
+        "summary": "Delete a setting group (cascades to associated settings).",
+        "responses": {
+          "200": {
+            "description": "Group deleted successfully"
+          },
+          "404": {
+            "description": "Group not found"
+          }
+        },
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "Group ID to delete"
+          }
+        ],
+        "tags": [
+          "settings_api"
+        ]
+      }
+    },
+    "/api/groups": {
+      "post": {
+        "summary": "Create a new Settings Group.",
+        "responses": {
+          "201": {
+            "description": "Group created successfully"
+          },
+          "400": {
+            "description": "Field name is required"
+          },
+          "409": {
+            "description": "Group already exists"
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "name"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "tags": [
+          "settings_api"
+        ]
+      }
+    }
+  },
+  "definitions": {},
+  "swagger": "2.0"
+}

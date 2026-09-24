@@ -50,12 +50,13 @@ def create_app():
     app.register_blueprint(status_view.bp)
     #app.register_blueprint(settings_view.bp)
 
-    from .api import api_status_view, api_mode_view, api_brightness_view, api_settings_view, api_logs_view
+    from .api import api_status_view, api_mode_view, api_brightness_view, api_settings_view, api_logs_view, docs_view
     app.register_blueprint(api_status_view.bp)
     app.register_blueprint(api_mode_view.bp)
     app.register_blueprint(api_brightness_view.bp)
     app.register_blueprint(api_settings_view.bp, url_prefix="/api")
     app.register_blueprint(api_logs_view.bp)
+    app.register_blueprint(docs_view.bp)
 
     # Ensure models are loaded BEFORE db.create_all() executes
 

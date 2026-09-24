@@ -35,49 +35,321 @@ def _handle_setting_endpoint(key: str):
 
 @bp.route("/settings/default/brightness", methods=["GET", "POST"])
 def brightness():
-    """Get or update default brightness setting."""
+    """Get or update default brightness setting.
+    ---
+    get:
+      summary: Get default brightness
+      responses:
+        "200":
+          description: Setting value retrieved
+          schema:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+        "404":
+          description: Setting not found
+    post:
+      summary: Update default brightness
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              value:
+                type: string
+      responses:
+        "200":
+          description: Setting updated successfully
+        "404":
+          description: Setting not found
+    """
     return _handle_setting_endpoint("default_brightness")
 
 
 @bp.route("/settings/default/mode", methods=["GET", "POST"])
 def default_mode():
-    """Get or update default operating mode setting."""
+    """Get or update default operating mode setting.
+    ---
+    get:
+      summary: Get default operating mode
+      responses:
+        "200":
+          description: Setting value retrieved
+          schema:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+        "404":
+          description: Setting not found
+    post:
+      summary: Update default operating mode
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              value:
+                type: string
+      responses:
+        "200":
+          description: Setting updated successfully
+        "404":
+          description: Setting not found
+    """
     return _handle_setting_endpoint("default_mode")
 
 
 @bp.route("/settings/mode/intervals/flash", methods=["GET", "POST"])
 def flash_intervals():
-    """Get or update flash interval setting."""
+    """Get or update flash interval setting.
+    ---
+    get:
+      summary: Get flash intervals
+      responses:
+        "200":
+          description: Setting value retrieved
+          schema:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+        "404":
+          description: Setting not found
+    post:
+      summary: Update flash intervals
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              value:
+                type: string
+      responses:
+        "200":
+          description: Setting updated successfully
+        "404":
+          description: Setting not found
+    """
     return _handle_setting_endpoint("default_flash_intervals")
 
 
 @bp.route("/settings/mode/intervals/wave", methods=["GET", "POST"])
 def wave_intervals():
-    """Get or update wave interval setting."""
+    """Get or update wave interval setting.
+    ---
+    get:
+      summary: Get wave intervals
+      responses:
+        "200":
+          description: Setting value retrieved
+          schema:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+        "404":
+          description: Setting not found
+    post:
+      summary: Update wave intervals
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              value:
+                type: string
+      responses:
+        "200":
+          description: Setting updated successfully
+        "404":
+          description: Setting not found
+    """
     return _handle_setting_endpoint("default_wave_intervals")
 
 
 @bp.route("/settings/mode/intervals/scatter", methods=["GET", "POST"])
 def scatter_intervals():
-    """Get or update scatter interval setting."""
+    """Get or update scatter interval setting.
+    ---
+    get:
+      summary: Get scatter intervals
+      responses:
+        "200":
+          description: Setting value retrieved
+          schema:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+        "404":
+          description: Setting not found
+    post:
+      summary: Update scatter intervals
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              value:
+                type: string
+      responses:
+        "200":
+          description: Setting updated successfully
+        "404":
+          description: Setting not found
+    """
     return _handle_setting_endpoint("default_scatter_intervals")
 
 
 @bp.route("/settings/status/available", methods=["GET", "POST"])
 def available_status():
-    """Get or update available status setting."""
+    """Get or update available status setting.
+    ---
+    get:
+      summary: Get available status setting
+      responses:
+        "200":
+          description: Setting value retrieved
+          schema:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+        "404":
+          description: Setting not found
+    post:
+      summary: Update available status setting
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              value:
+                type: string
+      responses:
+        "200":
+          description: Setting updated successfully
+        "404":
+          description: Setting not found
+    """
     return _handle_setting_endpoint("available_status")
 
 
 @bp.route("/settings/status/busy", methods=["GET", "POST"])
 def busy_status():
-    """Get or update busy status setting."""
+    """Get or update busy status setting.
+    ---
+    get:
+      summary: Get busy status setting
+      responses:
+        "200":
+          description: Setting value retrieved
+          schema:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+        "404":
+          description: Setting not found
+    post:
+      summary: Update busy status setting
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              value:
+                type: string
+      responses:
+        "200":
+          description: Setting updated successfully
+        "404":
+          description: Setting not found
+    """
     return _handle_setting_endpoint("busy_status")
 
 
 @bp.route("/settings/status/away", methods=["GET", "POST"])
 def away_status():
-    """Get or update away status setting."""
+    """Get or update away status setting.
+    ---
+    get:
+      summary: Get away status setting
+      responses:
+        "200":
+          description: Setting value retrieved
+          schema:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+        "404":
+          description: Setting not found
+    post:
+      summary: Update away status setting
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              value:
+                type: string
+      responses:
+        "200":
+          description: Setting updated successfully
+        "404":
+          description: Setting not found
+    """
     return _handle_setting_endpoint("away_status")
 
 
@@ -87,7 +359,52 @@ def away_status():
 
 @bp.route("/settings/status", methods=["GET", "POST"])
 def handle_statuses():
-    """GET all statuses or POST a new status to the Statuses group."""
+    """GET all statuses or POST a new status to the Statuses group.
+    ---
+    get:
+      summary: Get all statuses
+      responses:
+        "200":
+          description: List of statuses retrieved
+          schema:
+            type: array
+            items:
+              type: object
+        "404":
+          description: Statuses group not found
+    post:
+      summary: Add a new status
+      consumes:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - name
+              - setting_key
+              - value
+            properties:
+              name:
+                type: string
+              setting_key:
+                type: string
+              value:
+                type: string
+              description:
+                type: string
+      responses:
+        "201":
+          description: Status added successfully
+        "400":
+          description: Missing required fields
+        "409":
+          description: Setting key already exists
+        "404":
+          description: Statuses group does not exist
+    """
     if request.method == "GET":
         statuses = DB.get_statuses()
         if statuses is None:
@@ -123,7 +440,13 @@ def handle_statuses():
 
 @bp.route("/seed", methods=["GET"])
 def seed():
-    """Populate database with flat default settings mapped to 3 distinct groups."""
+    """Populate database with flat default settings mapped to 3 distinct groups.
+    ---
+    summary: Seed database
+    responses:
+      "200":
+        description: Database seeded or already seeded
+    """
     if DB.seed_database():
         return jsonify({"message": "Database seeded successfully!"}), 200
     return jsonify({"message": "Database already seeded!"}), 200
@@ -131,14 +454,40 @@ def seed():
 
 @bp.route("/settings", methods=["GET"])
 def get_settings():
-    """Fetch all settings groups with nested settings matching your structured JSON output."""
+    """Fetch all settings groups with nested settings matching your structured JSON output.
+    ---
+    summary: Get all settings groups and settings
+    responses:
+      "200":
+        description: List of groups with nested settings
+        schema:
+          type: array
+          items:
+            type: object
+    """
     groups = DB.get_all_groups_with_settings()
     return jsonify([group.to_dict(include_settings=True) for group in groups]), 200
 
 
 @bp.route("/settings/<key>", methods=["GET"])
 def get_setting_by_key(key: str):
-    """Fetch any single setting dynamically by key using to_dict()."""
+    """Fetch any single setting dynamically by key using to_dict().
+    ---
+    summary: Get setting by key
+    parameters:
+      - name: key
+        in: path
+        required: true
+        type: string
+        description: Setting key identifier
+    responses:
+      "200":
+        description: Setting found
+        schema:
+          type: object
+      "404":
+        description: Setting not found
+    """
     setting = DB.get_setting_by_key(key)
     if not setting:
         return jsonify({"error": f"Setting '{key}' not found"}), 404
@@ -148,7 +497,21 @@ def get_setting_by_key(key: str):
 
 @bp.route("/groups/<int:group_id>", methods=["DELETE"])
 def delete_group(group_id: int):
-    """Delete a setting group (cascades to associated settings)."""
+    """Delete a setting group (cascades to associated settings).
+    ---
+    summary: Delete setting group
+    parameters:
+      - name: group_id
+        in: path
+        required: true
+        type: integer
+        description: Group ID to delete
+    responses:
+      "200":
+        description: Group deleted successfully
+      "404":
+        description: Group not found
+    """
     if DB.delete(SettingsGroup, group_id):
         return jsonify({"message": f"Group {group_id} deleted successfully."}), 200
     return jsonify({"error": f"Group {group_id} not found"}), 404
@@ -160,7 +523,32 @@ def delete_group(group_id: int):
 
 @bp.route("/groups", methods=["POST"])
 def create_group():
-    """Create a new Settings Group."""
+    """Create a new Settings Group.
+    ---
+    summary: Create settings group
+    consumes:
+      - application/json
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+            description:
+              type: string
+    responses:
+      "201":
+        description: Group created successfully
+      "400":
+        description: Field name is required
+      "409":
+        description: Group already exists
+    """
     data = request.get_json(silent=True) or {}
     name = data.get("name")
 
@@ -176,7 +564,45 @@ def create_group():
 
 @bp.route("/settings", methods=["POST"])
 def create_setting():
-    """Create a new individual Setting."""
+    """Create a new individual Setting.
+    ---
+    summary: Create individual setting
+    consumes:
+      - application/json
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          required:
+            - name
+            - setting_key
+            - value
+            - settings_group_id
+          properties:
+            name:
+              type: string
+            setting_key:
+              type: string
+            value:
+              type: string
+            settings_group_id:
+              type: integer
+            value_type:
+              type: string
+            description:
+              type: string
+    responses:
+      "201":
+        description: Setting created successfully
+      "400":
+        description: Missing required fields or invalid value_type
+      "404":
+        description: Group ID not found
+      "409":
+        description: Setting key already exists
+    """
     data = request.get_json(silent=True) or {}
 
     required_fields = ["name", "setting_key", "value", "settings_group_id"]
