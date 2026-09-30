@@ -11,7 +11,7 @@ const SAVE_DEBOUNCE_MS = 200;
 // interval types without touching the render logic below.
 const INTERVAL_TYPES = [
   { key: 'wave', label: 'Wave Intervals', endpoint: '/api/settings/mode/intervals/wave' },
-  { key: 'flashing', label: 'Flashing Intervals', endpoint: '/api/settings/mode/intervals/flashing' },
+  { key: 'flashing', label: 'Flashing Intervals', endpoint: '/api/settings/mode/intervals/flash' },
   { key: 'scatter', label: 'Scatter Intervals', endpoint: '/api/settings/mode/intervals/scatter' }
 ];
 
