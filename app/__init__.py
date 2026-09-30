@@ -46,9 +46,8 @@ def create_app():
     log_reader.init_app(app, logDb)
 
     # Register blueprints
-    from .views import status_view, settings_view, battery_view
+    from .views import status_view
     app.register_blueprint(status_view.bp)
-    #app.register_blueprint(settings_view.bp)
 
     from .api import api_status_view, api_mode_view, api_brightness_view, api_settings_view, api_logs_view, docs_view
     app.register_blueprint(api_status_view.bp)
