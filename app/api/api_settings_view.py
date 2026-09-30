@@ -18,8 +18,11 @@ def _handle_setting_endpoint(key: str):
         # Expect payload like {"value": ...} or raw payload
         new_val = payload.get("value", payload) if isinstance(payload, dict) else payload
 
-        if DB.update_setting_value(key, new_value=new_val.upper()):
-            return jsonify({"status": "success", "key": key, "value": new_val.upper()}), 200
+        if type(new_val) == str:
+          new_val = new_val.upper()
+
+        if DB.update_setting_value(key, new_value=new_val):
+            return jsonify({"status": "success", "key": key, "value": new_val}), 200
         return jsonify({"error": f"Setting '{key}' not found"}), 404
 
     # GET Request

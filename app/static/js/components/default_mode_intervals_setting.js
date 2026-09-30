@@ -12,7 +12,7 @@ const SAVE_DEBOUNCE_MS = 200;
 const INTERVAL_TYPES = [
   { key: 'wave', label: 'Wave Intervals', endpoint: '/api/settings/mode/intervals/wave' },
   { key: 'flashing', label: 'Flashing Intervals', endpoint: '/api/settings/mode/intervals/flashing' },
-  { key: 'scatter', label: 'Scatter Intervals', endpoint: '/api/settings/mode/intervals/scatter' },
+  { key: 'scatter', label: 'Scatter Intervals', endpoint: '/api/settings/mode/intervals/scatter' }
 ];
 
 export function ModeIntervalsSetting({ isDarkMode }) {
