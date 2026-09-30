@@ -8,6 +8,7 @@ import { LogViewer } from './log_viewer.js';
 import { DefaultModeSetting } from './default_mode_setting.js';
 import { ModeIntervalsSetting } from './default_mode_intervals_setting.js'
 import { AddStatusSetting } from './add_status_setting.js';
+import { EditStatusesSetting } from './edit_statuses_setting.js';
 
 const html = htm.bind(h);
 
@@ -119,6 +120,7 @@ export function SettingsPage({ isDarkMode, onToggleTheme, onNavigate }) {
                 <${DefaultModeSetting} isDarkMode=${isDarkMode} />
               `}
               ${activeSection === 'status' && html`
+                <${EditStatusesSetting}, isDarkMode=${isDarkMode} />
                 <${AddStatusSetting} isDarkMode=${isDarkMode} />
               `}
               ${activeSection === 'brightness' && html`
