@@ -14,7 +14,7 @@ const html = htm.bind(h);
 const SECTIONS = [
   { id: 'mode-intervals', label: 'Mode Intervals', icon: '⏱️' },
   { id: 'default-mode', label: 'Default Mode', icon: '⚙️' },
-  { id: 'add-status', label: 'Add Status', icon: '➕' },
+  { id: 'status', label: 'Statuses', icon: '➕' },
   { id: 'brightness', label: 'Default Brightness', icon: '🔆' },
   { id: 'logs', label: 'Logs', icon: '📋' },
 ];
@@ -118,7 +118,7 @@ export function SettingsPage({ isDarkMode, onToggleTheme, onNavigate }) {
               ${activeSection === 'default-mode' && html`
                 <${DefaultModeSetting} isDarkMode=${isDarkMode} />
               `}
-              ${activeSection === 'add-status' && html`
+              ${activeSection === 'status' && html`
                 <${AddStatusSetting} isDarkMode=${isDarkMode} />
               `}
               ${activeSection === 'brightness' && html`

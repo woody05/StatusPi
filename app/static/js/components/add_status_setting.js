@@ -27,6 +27,21 @@ export function AddStatusSetting({ isDarkMode, onStatusAdded }) {
   const textColor = isDarkMode ? '#f8fafc' : '#0f172a';
   const inputBg = isDarkMode ? '#111827' : '#f1f5f9';
 
+  function hexToRgb(hex) {
+  // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+  const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+  const fullHex = hex.replace(shorthandRegex, (m, r, g, b) => r + r + g + g + b + b);
+
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(fullHex);
+  var _result = result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : null;
+
+  return `rgb(${_result.r}, ${_result.g}, ${_result.b})`;
+}
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name.trim()) return;
@@ -38,17 +53,19 @@ export function AddStatusSetting({ isDarkMode, onStatusAdded }) {
     // Payload formatted to match Python Status.to_dict() schema
     const payload = {
       name: name.trim(),
-      color: color
+      value: hexToRgb(color),
+      setting_key: `${name.trim()}_status`,
+      description: `${name.trim()}_status`
     };
 
     try {
-      const res = await fetch('/api/statuses', {
+      const res = await fetch('/api/settings/status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) throw new Error('Failed to create status');
+      if (!res.ok) throw new Error('Failed to create status', res);
       const createdStatus = await res.json();
 
       setName('');
