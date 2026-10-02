@@ -17,6 +17,8 @@ from app.database.db_manager import DatabaseManager
 def create_app():
     app = Flask(__name__)
 
+    print(os.getenv('APP_ENV', 'development'))
+
     app.config['APP_ENV'] = os.getenv('APP_ENV', 'development')
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app_settings.db"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False

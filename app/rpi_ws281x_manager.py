@@ -8,11 +8,14 @@ ENV = os.getenv("APP_ENV", "development")
 IS_MOCK = False
 MOCK_ERROR = ""
 
+print(ENV)
+
 if ENV != "development":
     try:
         from rpi_ws281x import PixelStrip, Color
     except ImportError as e:
         MOCK_ERROR = e
+        print(e)
         ENV = "development"
         IS_MOCK = True
 else:
