@@ -10,7 +10,8 @@ IS_MOCK = False
 if ENV != "development":
     try:
         from rpi_ws281x import PixelStrip, Color
-    except ImportError:
+    except ex as ImportError:
+        self.logger.info(f"Failed import falling back to (Dev) {ex}")
         ENV = "development"
         IS_MOCK = True
 else:
