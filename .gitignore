@@ -34,7 +34,5 @@ app_logs.db
 /.app_logs.db
 instance/app_settings.db
 
-pyproject.toml
-
 uv.lock
 
