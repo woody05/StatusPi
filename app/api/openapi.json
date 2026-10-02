@@ -477,22 +477,41 @@
         ]
       }
     },
-    "/api/settings/status/available": {
+    "/api/settings/status/{setting_key}": {
       "get": {
-        "summary": "Get or update available status setting.",
+        "summary": "Get or update a status setting by key.",
+        "parameters": [
+          {
+            "name": "setting_key",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Unique setting_key of the status (e.g. available_status)"
+          }
+        ],
         "tags": [
           "settings_api"
         ]
       },
-      "post": {
-        "summary": "Get or update available status setting.",
+      "put": {
+        "summary": "Get or update a status setting by key.",
         "parameters": [
+          {
+            "name": "setting_key",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Unique setting_key of the status (e.g. available_status)"
+          },
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
               "type": "object",
+              "required": [
+                "value"
+              ],
               "properties": {
                 "value": {
                   "type": "string"
@@ -504,24 +523,26 @@
         "tags": [
           "settings_api"
         ]
-      }
-    },
-    "/api/settings/status/busy": {
-      "get": {
-        "summary": "Get or update busy status setting.",
-        "tags": [
-          "settings_api"
-        ]
       },
       "post": {
-        "summary": "Get or update busy status setting.",
+        "summary": "Get or update a status setting by key.",
         "parameters": [
+          {
+            "name": "setting_key",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Unique setting_key of the status (e.g. available_status)"
+          },
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
               "type": "object",
+              "required": [
+                "value"
+              ],
               "properties": {
                 "value": {
                   "type": "string"
@@ -533,31 +554,34 @@
         "tags": [
           "settings_api"
         ]
-      }
-    },
-    "/api/settings/status/away": {
-      "get": {
-        "summary": "Get or update away status setting.",
-        "tags": [
-          "settings_api"
-        ]
       },
-      "post": {
-        "summary": "Get or update away status setting.",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
+      "delete": {
+        "summary": "Delete a status setting by key.",
+        "responses": {
+          "200": {
+            "description": "Status deleted successfully",
             "schema": {
-              "type": "object",
-              "properties": {
-                "value": {
-                  "type": "string"
-                }
-              }
+              "type": "string"
+            }
+          },
+          "404": {
+            "description": "No status found with that key",
+            "schema": {
+              "type": "string"
             }
           }
+        },
+        "parameters": [
+          {
+            "name": "setting_key",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Unique setting_key of the status to delete"
+          }
+        ],
+        "produces": [
+          "text/plain"
         ],
         "tags": [
           "settings_api"

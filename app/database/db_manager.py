@@ -91,6 +91,31 @@ class DatabaseManager:
                 return True
             return False
 
+    # Add this inside DatabaseManager, next to update_setting_value
+
+    @classmethod
+    def delete_setting_by_key(cls, key: str, group_name: Optional[str] = None) -> bool:
+        """Delete a setting by its unique setting_key.
+
+        If group_name is given, the setting is only deleted when it belongs to
+        that group (e.g. "Statuses"), so a status endpoint can't remove
+        something like default_mode.
+
+        Returns True if a row was deleted, False if not found (or wrong group).
+        """
+        with cls.session_scope() as session:
+            setting = session.scalar(db.select(SettingsModel).filter_by(setting_key=key))
+            if not setting:
+                return False
+
+            if group_name:
+                group = session.scalar(db.select(SettingsGroup).filter_by(name=group_name))
+                if not group or setting.settings_group_id != group.id:
+                    return False
+
+            session.delete(setting)
+            return True
+
     @classmethod
     def create_setting(
         cls,

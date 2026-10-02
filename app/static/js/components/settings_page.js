@@ -1,7 +1,6 @@
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
 import htm from 'htm';
-import { Header } from './header.js';
 import { getThemeStyles } from '../theme.js';
 import { DefaultBrightnessSettingsControls } from './default_brightness_setting.js';
 import { LogViewer } from './log_viewer.js';
@@ -13,9 +12,8 @@ import { EditStatusesSetting } from './edit_statuses_setting.js';
 const html = htm.bind(h);
 
 const SECTIONS = [
-  { id: 'mode-intervals', label: 'Mode Intervals', icon: '⏱️' },
-  { id: 'default-mode', label: 'Default Mode', icon: '⚙️' },
   { id: 'status', label: 'Statuses', icon: '➕' },
+  { id: 'mode', label: 'Modes', icon: '⚙️' },
   { id: 'brightness', label: 'Default Brightness', icon: '🔆' },
   { id: 'logs', label: 'Logs', icon: '📋' },
 ];
@@ -67,7 +65,7 @@ function SettingsNav({ isDarkMode, activeId, onSelect }) {
 export function SettingsPage({ isDarkMode, onToggleTheme, onNavigate }) {
   const theme = getThemeStyles(isDarkMode);
 
-  const [activeSection, setActiveSection] = useState('mode-intervals');
+  const [activeSection, setActiveSection] = useState('status');
   const [deviceIp, setDeviceIp] = useState('192.168.1.100');
   const [refreshInterval, setRefreshInterval] = useState('5');
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -113,11 +111,9 @@ export function SettingsPage({ isDarkMode, onToggleTheme, onNavigate }) {
             </h4>
 
             <div class="settings-content-tight">
-              ${activeSection === 'mode-intervals' && html`
-                <${ModeIntervalsSetting} isDarkMode=${isDarkMode} />
-              `}
-              ${activeSection === 'default-mode' && html`
+              ${activeSection === 'mode' && html`
                 <${DefaultModeSetting} isDarkMode=${isDarkMode} />
+                <${ModeIntervalsSetting} isDarkMode=${isDarkMode} />
               `}
               ${activeSection === 'status' && html`
                 <${EditStatusesSetting}, isDarkMode=${isDarkMode} />

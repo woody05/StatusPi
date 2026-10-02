@@ -13,7 +13,7 @@ bp = Blueprint("settings_api", __name__)
 
 def _handle_setting_endpoint(key: str):
     """Generic GET/POST handler for setting endpoints."""
-    if request.method == "POST":
+    if request.method == "POST" or request.method == "PUT":
         payload = request.get_json(silent=True) or {}
         # Expect payload like {"value": ...} or raw payload
         new_val = payload.get("value", payload) if isinstance(payload, dict) else payload
@@ -27,6 +27,7 @@ def _handle_setting_endpoint(key: str):
 
     # GET Request
     setting = DB.get_setting_by_key(key)
+    print(f'getting setting {key}')
     if setting:
         return jsonify({"key": key, "value": setting.value}), 200
     return jsonify({"error": f"Setting '{key}' not found"}), 404
@@ -236,12 +237,137 @@ def scatter_intervals():
     return _handle_setting_endpoint("default_scatter_intervals")
 
 
-@bp.route("/settings/status/available", methods=["GET", "POST"])
-def available_status():
-    """Get or update available status setting.
+# @bp.route("/settings/status/available", methods=["GET", "POST"])
+# def available_status():
+#     """Get or update available status setting.
+#     ---
+#     get:
+#       summary: Get available status setting
+#       responses:
+#         "200":
+#           description: Setting value retrieved
+#           schema:
+#             type: object
+#             properties:
+#               key:
+#                 type: string
+#               value:
+#                 type: string
+#         "404":
+#           description: Setting not found
+#     post:
+#       summary: Update available status setting
+#       consumes:
+#         - application/json
+#       parameters:
+#         - name: body
+#           in: body
+#           required: true
+#           schema:
+#             type: object
+#             properties:
+#               value:
+#                 type: string
+#       responses:
+#         "200":
+#           description: Setting updated successfully
+#         "404":
+#           description: Setting not found
+#     """
+#     return _handle_setting_endpoint("available_status")
+
+
+# @bp.route("/settings/status/busy", methods=["GET", "POST"])
+# def busy_status():
+#     """Get or update busy status setting.
+#     ---
+#     get:
+#       summary: Get busy status setting
+#       responses:
+#         "200":
+#           description: Setting value retrieved
+#           schema:
+#             type: object
+#             properties:
+#               key:
+#                 type: string
+#               value:
+#                 type: string
+#         "404":
+#           description: Setting not found
+#     post:
+#       summary: Update busy status setting
+#       consumes:
+#         - application/json
+#       parameters:
+#         - name: body
+#           in: body
+#           required: true
+#           schema:
+#             type: object
+#             properties:
+#               value:
+#                 type: string
+#       responses:
+#         "200":
+#           description: Setting updated successfully
+#         "404":
+#           description: Setting not found
+#     """
+#     return _handle_setting_endpoint("busy_status")
+
+
+# @bp.route("/settings/status/away", methods=["GET", "POST"])
+# def away_status():
+#     """Get or update away status setting.
+#     ---
+#     get:
+#       summary: Get away status setting
+#       responses:
+#         "200":
+#           description: Setting value retrieved
+#           schema:
+#             type: object
+#             properties:
+#               key:
+#                 type: string
+#               value:
+#                 type: string
+#         "404":
+#           description: Setting not found
+#     post:
+#       summary: Update away status setting
+#       consumes:
+#         - application/json
+#       parameters:
+#         - name: body
+#           in: body
+#           required: true
+#           schema:
+#             type: object
+#             properties:
+#               value:
+#                 type: string
+#       responses:
+#         "200":
+#           description: Setting updated successfully
+#         "404":
+#           description: Setting not found
+#     """
+#     return _handle_setting_endpoint("away_status")
+
+@bp.route("/settings/status/<setting_key>", methods=["GET", "POST", "PUT"])
+def status(setting_key):
+    """Get or update a status setting by key.
     ---
     get:
-      summary: Get available status setting
+      summary: Get a status setting
+      parameters:
+        - name: setting_key
+          in: path
+          required: true
+          type: string
+          description: Unique setting_key of the status (e.g. available_status)
       responses:
         "200":
           description: Setting value retrieved
@@ -254,40 +380,35 @@ def available_status():
                 type: string
         "404":
           description: Setting not found
-    post:
-      summary: Update available status setting
+    put:
+      summary: Update a status setting's value
+      description: String values are stored uppercased.
       consumes:
         - application/json
       parameters:
+        - name: setting_key
+          in: path
+          required: true
+          type: string
+          description: Unique setting_key of the status (e.g. available_status)
         - name: body
           in: body
           required: true
           schema:
             type: object
+            required:
+              - value
             properties:
               value:
                 type: string
       responses:
         "200":
           description: Setting updated successfully
-        "404":
-          description: Setting not found
-    """
-    return _handle_setting_endpoint("available_status")
-
-
-@bp.route("/settings/status/busy", methods=["GET", "POST"])
-def busy_status():
-    """Get or update busy status setting.
-    ---
-    get:
-      summary: Get busy status setting
-      responses:
-        "200":
-          description: Setting value retrieved
           schema:
             type: object
             properties:
+              status:
+                type: string
               key:
                 type: string
               value:
@@ -295,66 +416,73 @@ def busy_status():
         "404":
           description: Setting not found
     post:
-      summary: Update busy status setting
+      summary: Update a status setting's value (same behavior as PUT)
+      description: String values are stored uppercased.
       consumes:
         - application/json
       parameters:
+        - name: setting_key
+          in: path
+          required: true
+          type: string
+          description: Unique setting_key of the status (e.g. available_status)
         - name: body
           in: body
           required: true
           schema:
             type: object
+            required:
+              - value
             properties:
               value:
                 type: string
       responses:
         "200":
           description: Setting updated successfully
-        "404":
-          description: Setting not found
-    """
-    return _handle_setting_endpoint("busy_status")
-
-
-@bp.route("/settings/status/away", methods=["GET", "POST"])
-def away_status():
-    """Get or update away status setting.
-    ---
-    get:
-      summary: Get away status setting
-      responses:
-        "200":
-          description: Setting value retrieved
           schema:
             type: object
             properties:
+              status:
+                type: string
               key:
                 type: string
               value:
                 type: string
         "404":
           description: Setting not found
-    post:
-      summary: Update away status setting
-      consumes:
-        - application/json
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              value:
-                type: string
-      responses:
-        "200":
-          description: Setting updated successfully
-        "404":
-          description: Setting not found
     """
-    return _handle_setting_endpoint("away_status")
+    return _handle_setting_endpoint(setting_key)
 
+@bp.route("/settings/status/<setting_key>", methods=["DELETE"])
+def deleteStatus(setting_key):
+    """Delete a status setting by key.
+    ---
+    summary: Delete a status setting
+    parameters:
+      - name: setting_key
+        in: path
+        required: true
+        type: string
+        description: Unique setting_key of the status to delete
+    produces:
+      - text/plain
+    responses:
+      "200":
+        description: Status deleted successfully
+        schema:
+          type: string
+      "404":
+        description: No status found with that key
+        schema:
+          type: string
+    """
+
+    setting = DB.get_setting_by_key(setting_key)
+    if not setting:
+        return "No Status found", 404
+    DB.delete_setting_by_key(setting_key)
+    
+    return "Successfully Deleted Status", 200
 
 # =====================================================================
 #  Status Collection Endpoints
@@ -422,6 +550,10 @@ def handle_statuses():
         return jsonify({"error": f"Missing required fields: {', '.join(missing)}"}), 400
 
     setting_key = data["setting_key"]
+
+    # replace spaces in key with '_' to help searching by key later
+    setting_key = setting_key.replace(" ", "_")
+
     if DB.get_setting_by_key(setting_key):
         return jsonify({"error": f"Setting key '{setting_key}' already exists"}), 409
 
