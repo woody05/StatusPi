@@ -6,12 +6,13 @@ from flask import current_app, has_app_context
 # 1. Check env variable or attempt hardware import
 ENV = os.getenv("APP_ENV", "development")
 IS_MOCK = False
+MOCK_ERROR = ""
 
 if ENV != "development":
     try:
         from rpi_ws281x import PixelStrip, Color
     except ImportError as e:
-        self.logger.info(f"Failed import falling back to (Dev) {e}")
+        MOCK_ERROR = e
         ENV = "development"
         IS_MOCK = True
 else:
@@ -78,7 +79,7 @@ class RPIWS281XManager:
         self.debug = kwargs.get('debug', self.debug)
         self.settings_manager = getattr(app, 'settings_manager', self.settings_manager)
 
-        mode_str = "MOCKED (Dev)" if IS_MOCK else "HARDWARE"
+        mode_str = f"MOCKED (Dev) {MOCK_ERROR}" if IS_MOCK else "HARDWARE"
         self.logger.info(f"RPIWS281XManager initialized in {mode_str} mode")
 
         initial_brightness = self.settings_manager.get_settings().brightness if self.settings_manager else LED_BRIGHTNESS
