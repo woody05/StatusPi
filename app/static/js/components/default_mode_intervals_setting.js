@@ -101,9 +101,14 @@ export function ModeIntervalsSetting({ isDarkMode }) {
     saveInterval(key, endpoint, newValue);
   };
 
-  // Math to map the 0.1 to 2 range smoothly into a 0% to 100% track background fill
+  // Math to map the 0.01 to 2 range smoothly into a 0% to 100% track background fill
   const getTrackGradient = (value) => {
-    const percentage = ((value - 0.1) / 1.9) * 100;
+    // Calculate percentage using the exact domain span of 1.99
+    const rawPercentage = ((value - 0.01) / 1.99) * 100;
+    
+    // Clamp the percentage strictly between 0 and 100
+    const percentage = Math.max(0, Math.min(100, rawPercentage));
+
     return `
       linear-gradient(
         to right,
@@ -208,7 +213,7 @@ export function ModeIntervalsSetting({ isDarkMode }) {
                     border: 1px solid rgba(59, 130, 246, 0.3);
                   "
                 >
-                  ${intervals[key].toFixed(1)}s
+                  ${intervals[key]}s
                 </span>
               </div>
 
@@ -218,9 +223,9 @@ export function ModeIntervalsSetting({ isDarkMode }) {
                 <input
                   type="range"
                   class="glow-range-input"
-                  min="0.1"
+                  min="0.01"
                   max="2"
-                  step="0.1"
+                  step="0.01"
                   value=${intervals[key]}
                   onInput=${handleIntervalChange(key, endpoint)}
                   aria-label=${`${label} speed interval setting`}
@@ -235,7 +240,7 @@ export function ModeIntervalsSetting({ isDarkMode }) {
                     color: ${subtextColor};
                   "
                 >
-                  <span>0.1s</span>
+                  <span>0.01s</span>
                   <span>1.0s</span>
                   <span>2.0s</span>
                 </div>
