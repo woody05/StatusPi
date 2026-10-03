@@ -124,3 +124,41 @@ def mode_stream():
             "X-Accel-Buffering": "no",
         }
     )
+
+@bp.route('/api/mode/interval', methods=['GET', 'POST'])
+def set_mode_interval():
+    if request.method == "POST":
+        payload = request.get_json(silent=True) or {}
+
+        mode = payload.get("mode")
+        new_val = payload.get("value")
+
+        if mode is None:
+            return jsonify({"error": "Must include Mode"}), 400
+
+        if new_val is None:
+            return jsonify({"error": "Must include value"}), 400
+
+        try:
+            # Convert the mode string to the Mode enum
+            mode_enum = Mode[mode.upper()]  # Ensure case-insensitivity
+        except KeyError:
+            return jsonify({"error": f"Invalid mode: {mode}"}), 400
+
+        match mode_enum:
+            case Mode.FLASHING:
+                current_app.status_manager.set_flashing_intervals(new_val)
+            case Mode.SCATTER:
+                current_app.status_manager.set_scatter_intervals(new_val)
+            case Mode.WAVE:
+                current_app.status_manager.set_wave_intervals(new_val)
+            case _:
+                return jsonify({"error": "Unknown mode"}), 400
+
+        return jsonify({"success": True, "value": new_val}), 200
+
+    return jsonify({
+        "FLASHING": current_app.status_manager.flashing_intervals,
+        "WAVE": current_app.status_manager.wave_intervals,
+        "SCATTER": current_app.status_manager.scatter_intervals
+    }), 200

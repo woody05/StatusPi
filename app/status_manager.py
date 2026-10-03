@@ -1,9 +1,10 @@
+from app.database.db_manager import DatabaseManager as DB
+from app.models.status import Status
 from enum import Enum
 import random
 import threading
 import time
-from app.database.db_manager import DatabaseManager as DB
-from app.models.status import Status
+
 
 class Mode(Enum):
     SOLID = 1
@@ -47,7 +48,7 @@ class StatusManager:
         app.status_manager = self
         self.logger = app.logger
         self.debug = kwargs.get('debug', self.debug)
-        
+
         self.logger.info("StatusManager initialized")
 
         self.rpi_ws281x_manager = app.rpi_ws281x_manager
@@ -67,7 +68,7 @@ class StatusManager:
 
             # Fetch target default status name/key (e.g., "Available")
             default_status_name = self._get_db_setting("default_status", "Available")
-            
+
             # Fetch all available status option dicts from DB
             available_statuses = self.get_available_statuses()
 
@@ -111,11 +112,11 @@ class StatusManager:
 
             if self.logger:
                 self.logger.info(f"Setting status to ID {status_id} ({color})")
-            
+
             self.status = Status(status_id, status.get("name"), color)
             if self.mode == Mode.SOLID:
                 self._set_solid_mode()
-            
+
             if self.rpi_ws281x_manager:
                 self.rpi_ws281x_manager.set_color(color)
         except Exception as e:
@@ -141,7 +142,7 @@ class StatusManager:
 
         self.status_mode_task_stop_event.clear()
         self.status_mode_task_thread = threading.Thread(
-            target=self.status_mode_background_task, 
+            target=self.status_mode_background_task,
             args=(mode_action,),
             daemon=True
         )
@@ -175,7 +176,7 @@ class StatusManager:
             if self.logger:
                 self.logger.error(f"Error getting brightness: {ex}")
             raise
-        
+
     def set_brightness(self, brightness):
         try:
             if self.logger:
@@ -200,6 +201,15 @@ class StatusManager:
     # -------------------------------------------------------------------------
     # Animation loops (No debug logging in hot execution paths)
     # -------------------------------------------------------------------------
+
+    def set_flashing_intervals(self, value):
+        self.flashing_intervals = value
+
+    def set_scatter_intervals(self, value):
+        self.scatter_intervals = value
+
+    def set_wave_intervals(self, value):
+        self.wave_intervals = value
 
     def _set_flashing_mode(self):
         try:
@@ -233,14 +243,14 @@ class StatusManager:
             if self.logger:
                 self.logger.error(f"Error in wave mode: {e}")
             raise
-    
+
     def _set_scatter_mode(self):
         try:
             turn_led_on = random.choices([True, False], weights=[60, 40], k=1)[0]
             random_led_index = random.randint(0, 33)
-                
+
             color = self._get_current_status_color() if turn_led_on else BLANK_COLOR
-            
+
             if self.rpi_ws281x_manager:
                 self.rpi_ws281x_manager.set_color_single_index(color, random_led_index)
             time.sleep(self.scatter_intervals)

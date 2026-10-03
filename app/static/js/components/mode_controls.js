@@ -2,6 +2,7 @@ import { h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 import htm from 'htm';
 import { getThemeStyles } from '../theme.js';
+import { ModeIntervalsControls } from './mode_intervals_controls.js';
 
 const html = htm.bind(h);
 
@@ -20,14 +21,9 @@ export function ModeControls({ isDarkMode }) {
         const mode = String(modeStr).toUpperCase();
         switch (mode) {
             case 'OFF': return 'fa-power-off';
-            case 'SOLID': 
-            case 'STATIC': return 'fa-lightbulb';
-            case 'PULSE': 
-            case 'WAVE':
-            case 'BREATHE': return 'fa-wave-square';
-            case 'RAINBOW': return 'fa-rainbow';
-            case 'FLASH': 
-            case 'STROBE': return 'fa-bolt';
+            case 'SOLID': return 'fa-lightbulb';
+            case 'WAVE': return 'fa-wave-square';
+            case 'FLASHING': return 'fa-bolt';
             case 'SCATTER': return 'fa-bahai';
             default: return 'fa-sliders-h';
         }
@@ -110,12 +106,12 @@ export function ModeControls({ isDarkMode }) {
     };
 
     // Fallback theme resolutions matching StatusControls
-    const cardBgColor = (theme && theme.card && theme.card.backgroundColor) 
-        ? theme.card.backgroundColor 
+    const cardBgColor = (theme && theme.card && theme.card.backgroundColor)
+        ? theme.card.backgroundColor
         : (isDarkMode ? '#1a2332' : '#ffffff');
-        
-    const cardBorderColor = (theme && theme.card && theme.card.borderColor) 
-        ? theme.card.borderColor 
+
+    const cardBorderColor = (theme && theme.card && theme.card.borderColor)
+        ? theme.card.borderColor
         : (isDarkMode ? '#27354a' : '#e2e8f0');
 
     if (loading) {
@@ -142,7 +138,7 @@ export function ModeControls({ isDarkMode }) {
     return html`
         <div class="card border rounded-3" style="background-color: ${cardBgColor}; border-color: ${cardBorderColor} !important;">
             <div class="card-body p-3 p-md-4">
-                
+
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <h6 class="fw-bold text-uppercase mb-0" style="font-size: 0.75rem; letter-spacing: 0.05em; color: ${isDarkMode ? '#94a3b8' : '#475569'};">
                         Display Modes
@@ -157,32 +153,32 @@ export function ModeControls({ isDarkMode }) {
                         const isActive = String(activeMode).toUpperCase() === String(modeStr).toUpperCase();
                         return html`
                             <div class="col-6 col-md-3" key=${modeStr}>
-                                <button 
+                                <button
                                     type="button"
                                     class="btn w-100 py-3 px-2 d-flex flex-column align-items-center justify-content-center gap-2 rounded-3 border-0"
                                     style="
                                         min-height: 72px;
-                                        background-color: ${isActive 
-                                            ? '#2563eb' 
+                                        background-color: ${isActive
+                                            ? '#2563eb'
                                             : (isDarkMode ? '#111827' : '#ffffff')};
-                                        outline: ${isActive 
-                                            ? '2px solid #3b82f6' 
+                                        outline: ${isActive
+                                            ? '2px solid #3b82f6'
                                             : `1px solid ${cardBorderColor}`};
-                                        box-shadow: ${isActive 
-                                            ? '0 4px 14px rgba(37,99,235,0.4)' 
+                                        box-shadow: ${isActive
+                                            ? '0 4px 14px rgba(37,99,235,0.4)'
                                             : 'none'};
                                         transition: all 0.15s ease-in-out;
                                     "
                                     onClick=${() => handleSelectMode(modeStr)}
                                 >
-                                    <i 
+                                    <i
                                         class=${`fas ${getModeIcon(modeStr)} fs-5`}
                                         style="color: ${isActive ? '#ffffff' : (isDarkMode ? '#8b9bb4' : '#475569')};"
                                     ></i>
-                                    <span 
-                                        class="fw-bold" 
+                                    <span
+                                        class="fw-bold"
                                         style="
-                                            font-size: 0.8rem; 
+                                            font-size: 0.8rem;
                                             color: ${isActive ? '#ffffff' : (isDarkMode ? '#f8fafc' : '#0f172a')};
                                         "
                                     >
@@ -195,5 +191,10 @@ export function ModeControls({ isDarkMode }) {
                 </div>
             </div>
         </div>
+
+        <${ModeIntervalsControls}
+          isDarkMode=${isDarkMode}
+          mode=${activeMode}
+        />
     `;
 }

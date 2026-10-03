@@ -91,12 +91,12 @@ export function StatusControls({ isDarkMode }) {
     };
 
     // Card background & border matching theme.js properties
-    const cardBgColor = (theme && theme.card && theme.card.backgroundColor) 
-        ? theme.card.backgroundColor 
+    const cardBgColor = (theme && theme.card && theme.card.backgroundColor)
+        ? theme.card.backgroundColor
         : (isDarkMode ? '#1a2332' : '#ffffff');
-        
-    const cardBorderColor = (theme && theme.card && theme.card.borderColor) 
-        ? theme.card.borderColor 
+
+    const cardBorderColor = (theme && theme.card && theme.card.borderColor)
+        ? theme.card.borderColor
         : (isDarkMode ? '#27354a' : '#e2e8f0');
 
     if (loading) {
@@ -123,7 +123,7 @@ export function StatusControls({ isDarkMode }) {
     return html`
         <div class="card border rounded-3" style="background-color: ${cardBgColor}; border-color: ${cardBorderColor} !important;">
             <div class="card-body p-3 p-md-4">
-                
+
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <h6 class="fw-bold text-uppercase mb-0" style="font-size: 0.75rem; letter-spacing: 0.05em; color: ${isDarkMode ? '#94a3b8' : '#475569'};">
                         Statuses
@@ -140,13 +140,13 @@ export function StatusControls({ isDarkMode }) {
 
                         return html`
                             <div class="col-12 col-sm-4" key=${control.id}>
-                                <button 
+                                <button
                                     type="button"
                                     class="btn w-100 py-3 px-3 text-start position-relative overflow-hidden rounded-3 border-0"
                                     style="
                                         min-height: 52px;
-                                        background-color: ${isDarkMode 
-                                            ? (isActive ? '#253244' : '#111827') 
+                                        background-color: ${isDarkMode
+                                            ? (isActive ? '#253244' : '#111827')
                                             : (isActive ? '#f8fafc' : '#ffffff')};
                                         outline: ${isActive ? `2px solid ${accentColor}` : `1px solid ${cardBorderColor}`};
                                         box-shadow: ${isActive ? `0 0 12px ${accentColor}33` : 'none'};
@@ -154,31 +154,31 @@ export function StatusControls({ isDarkMode }) {
                                     "
                                     onClick=${() => handleSelectStatus(control.id)}
                                 >
-                                    <div 
-                                        class="position-absolute top-0 start-0 bottom-0" 
+                                    <div
+                                        class="position-absolute top-0 start-0 bottom-0"
                                         style="
-                                            width: 4px; 
+                                            width: 4px;
                                             background-color: ${accentColor};
                                             opacity: ${isActive ? '1' : '0.5'};
                                         "
                                     ></div>
 
                                     <div class="ps-2 d-flex align-items-center justify-content-between">
-                                        <span 
-                                            class="fw-bold text-truncate me-2" 
+                                        <span
+                                            class="fw-bold text-truncate me-2"
                                             style="
-                                                font-size: 0.875rem; 
+                                                font-size: 0.875rem;
                                                 color: ${isDarkMode ? '#f8fafc' : '#0f172a'};
                                             "
                                         >
                                             ${control.name}
                                         </span>
 
-                                        <span 
+                                        <span
                                             class="rounded-circle d-inline-block flex-shrink-0"
                                             style="
-                                                width: 8px; 
-                                                height: 8px; 
+                                                width: 8px;
+                                                height: 8px;
                                                 background-color: ${accentColor};
                                                 box-shadow: ${isActive ? `0 0 6px ${accentColor}` : 'none'};
                                             "
