@@ -11,7 +11,6 @@ export function ModeIntervalsControls({ isDarkMode, mode }) {
   const [modeInterval, setModeInterval] = useState(0.01);
   const [activeMode, setActiveMode] = useState(mode || "");
   const [modeLoaded, setModeLoaded] = useState(false);
-  const [connectionError, setConnectionError] = useState(false);
 
   const timeoutRefs = useRef({});
 
