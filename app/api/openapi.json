@@ -141,19 +141,30 @@
         "summary": "Get current operating mode.",
         "responses": {
           "200": {
-            "description": "Current mode value",
+            "description": "Current operating mode",
             "schema": {
               "type": "object",
               "properties": {
                 "mode": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Current operating mode",
+                  "enum": [
+                    "FLASHING",
+                    "WAVE",
+                    "SCATTER"
+                  ],
+                  "example": "FLASHING"
                 }
               }
             }
           }
         },
         "tags": [
-          "mode api"
+          "mode api",
+          "Mode"
+        ],
+        "produces": [
+          "application/json"
         ]
       },
       "post": {
@@ -165,16 +176,32 @@
               "type": "object",
               "properties": {
                 "status": {
-                  "type": "string"
+                  "type": "string",
+                  "example": "success"
                 },
                 "mode": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "FLASHING",
+                    "WAVE",
+                    "SCATTER"
+                  ],
+                  "example": "FLASHING"
                 }
               }
             }
           },
           "400": {
-            "description": "Invalid data or invalid mode string"
+            "description": "Invalid request data or invalid mode",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Invalid mode: INVALID"
+                }
+              }
+            }
           }
         },
         "parameters": [
@@ -182,6 +209,7 @@
             "name": "body",
             "in": "body",
             "required": true,
+            "description": "Operating mode to set",
             "schema": {
               "type": "object",
               "required": [
@@ -190,17 +218,27 @@
               "properties": {
                 "mode": {
                   "type": "string",
-                  "description": "The target mode name"
+                  "description": "The target operating mode",
+                  "enum": [
+                    "FLASHING",
+                    "WAVE",
+                    "SCATTER"
+                  ],
+                  "example": "FLASHING"
                 }
               }
             }
           }
         ],
+        "tags": [
+          "mode api",
+          "Mode"
+        ],
         "consumes": [
           "application/json"
         ],
-        "tags": [
-          "mode api"
+        "produces": [
+          "application/json"
         ]
       }
     },
@@ -209,37 +247,339 @@
         "summary": "Get all available operating modes.",
         "responses": {
           "200": {
-            "description": "List of available modes",
+            "description": "List of available operating modes",
             "schema": {
               "type": "array",
               "items": {
-                "type": "string"
-              }
+                "type": "string",
+                "enum": [
+                  "FLASHING",
+                  "WAVE",
+                  "SCATTER"
+                ]
+              },
+              "example": [
+                "FLASHING",
+                "WAVE",
+                "SCATTER"
+              ]
             }
           },
           "500": {
-            "description": "Failed to get modes"
+            "description": "Failed to get modes",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Failed to get modes"
+                }
+              }
+            }
           }
         },
         "tags": [
-          "mode api"
+          "mode api",
+          "Mode"
+        ],
+        "produces": [
+          "application/json"
         ]
       }
     },
     "/api/mode/stream": {
       "get": {
         "summary": "Stream operating mode updates.",
-        "description": "Emits the current mode object as an SSE `data:` event every second.",
+        "description": "Opens a Server-Sent Events connection that sends the current\noperating mode every second.\n",
         "responses": {
           "200": {
-            "description": "text/event-stream of mode values",
+            "description": "Server-sent event stream containing the current mode",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "data: {\"mode\":\"FLASHING\"}"
             }
           }
         },
         "tags": [
-          "mode api"
+          "mode api",
+          "Mode"
+        ],
+        "produces": [
+          "text/event-stream"
+        ]
+      }
+    },
+    "/api/mode/interval": {
+      "get": {
+        "summary": "Get or set mode intervals.",
+        "description": "GET returns the configured interval for each mode.\nPOST updates the interval for a specific mode.\n",
+        "responses": {
+          "200": {
+            "description": "Request completed successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "FLASHING": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "Flashing interval",
+                  "example": 1.0
+                },
+                "WAVE": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "Wave interval",
+                  "example": 2.0
+                },
+                "SCATTER": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "Scatter interval",
+                  "example": 0.5
+                },
+                "success": {
+                  "type": "boolean",
+                  "description": "True when an interval was updated",
+                  "example": true
+                },
+                "value": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "Updated interval value",
+                  "example": 1.5
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request, mode, or value",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "examples": {
+                    "missingMode": {
+                      "value": "Must include Mode"
+                    },
+                    "missingValue": {
+                      "value": "Must include value"
+                    },
+                    "invalidMode": {
+                      "value": "Invalid mode: INVALID"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": false,
+            "description": "Required when using POST to update an interval.",
+            "schema": {
+              "type": "object",
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "description": "Mode whose interval should be changed",
+                  "enum": [
+                    "FLASHING",
+                    "WAVE",
+                    "SCATTER"
+                  ],
+                  "example": "FLASHING"
+                },
+                "value": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "New interval value",
+                  "example": 1.5
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "mode api",
+          "Mode"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      },
+      "post": {
+        "summary": "Get or set mode intervals.",
+        "description": "GET returns the configured interval for each mode.\nPOST updates the interval for a specific mode.\n",
+        "responses": {
+          "200": {
+            "description": "Request completed successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "FLASHING": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "Flashing interval",
+                  "example": 1.0
+                },
+                "WAVE": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "Wave interval",
+                  "example": 2.0
+                },
+                "SCATTER": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "Scatter interval",
+                  "example": 0.5
+                },
+                "success": {
+                  "type": "boolean",
+                  "description": "True when an interval was updated",
+                  "example": true
+                },
+                "value": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "Updated interval value",
+                  "example": 1.5
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request, mode, or value",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "examples": {
+                    "missingMode": {
+                      "value": "Must include Mode"
+                    },
+                    "missingValue": {
+                      "value": "Must include value"
+                    },
+                    "invalidMode": {
+                      "value": "Invalid mode: INVALID"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": false,
+            "description": "Required when using POST to update an interval.",
+            "schema": {
+              "type": "object",
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "description": "Mode whose interval should be changed",
+                  "enum": [
+                    "FLASHING",
+                    "WAVE",
+                    "SCATTER"
+                  ],
+                  "example": "FLASHING"
+                },
+                "value": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "New interval value",
+                  "example": 1.5
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "mode api",
+          "Mode"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/api/mode/interval/stream": {
+      "get": {
+        "summary": "Stream mode interval updates.",
+        "description": "Opens a Server-Sent Events connection that sends the selected\nmode's interval every second.\n\nExample:\n  /api/mode/interval/stream?mode=FLASHING\n",
+        "responses": {
+          "200": {
+            "description": "Server-sent event stream containing the mode interval",
+            "schema": {
+              "type": "string",
+              "example": "data: {\"mode\":\"FLASHING\",\"intervals\":1.0}"
+            }
+          },
+          "400": {
+            "description": "Missing or invalid mode",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "examples": {
+                    "missingMode": {
+                      "value": "Missing mode"
+                    },
+                    "invalidMode": {
+                      "value": "Invalid mode: INVALID"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "FLASHING",
+              "WAVE",
+              "SCATTER"
+            ],
+            "description": "Mode whose interval should be streamed",
+            "example": "FLASHING"
+          }
+        ],
+        "tags": [
+          "mode api",
+          "Mode"
+        ],
+        "produces": [
+          "text/event-stream"
         ]
       }
     },
@@ -478,21 +818,6 @@
       }
     },
     "/api/settings/status/{setting_key}": {
-      "get": {
-        "summary": "Get or update a status setting by key.",
-        "parameters": [
-          {
-            "name": "setting_key",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "description": "Unique setting_key of the status (e.g. available_status)"
-          }
-        ],
-        "tags": [
-          "settings_api"
-        ]
-      },
       "put": {
         "summary": "Get or update a status setting by key.",
         "parameters": [
@@ -518,6 +843,21 @@
                 }
               }
             }
+          }
+        ],
+        "tags": [
+          "settings_api"
+        ]
+      },
+      "get": {
+        "summary": "Get or update a status setting by key.",
+        "parameters": [
+          {
+            "name": "setting_key",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Unique setting_key of the status (e.g. available_status)"
           }
         ],
         "tags": [

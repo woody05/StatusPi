@@ -98,7 +98,7 @@ class StatusManager:
     def _stop_status_mode_task(self):
         if self.status_mode_task_thread and self.status_mode_task_thread.is_alive():
             self.status_mode_task_stop_event.set()
-            self.status_mode_task_thread.join()
+            #self.status_mode_task_thread.join()
 
     def status_mode_background_task(self, action):
         while not self.status_mode_task_stop_event.is_set():

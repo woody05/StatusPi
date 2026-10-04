@@ -23,8 +23,8 @@ export function ModeIntervalsControls({ isDarkMode, mode }) {
 
   const subtextColor = isDarkMode ? "#8b9bb4" : "#64748b";
 
-  const activeTrack = '#3b82f6';
-  const inactiveTrack = isDarkMode ? '#0f172a' : '#e2e8f0';
+  const activeTrack = "#3b82f6";
+  const inactiveTrack = isDarkMode ? "#0f172a" : "#e2e8f0";
 
   const theme = getThemeStyles(isDarkMode);
   const loading = !modeLoaded;
@@ -47,36 +47,40 @@ export function ModeIntervalsControls({ isDarkMode, mode }) {
     }
   };
 
-  const formatModeName = (modeStr) => {
-    return String(modeStr)
-      .toLowerCase()
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  };
-
-  // Fetch intervals whenever activeMode changes
   useEffect(() => {
-    if (!activeMode) return;
+    if (!activeMode || activeMode === "SOLID") {
+      setModeLoaded(false);
+      return;
+    }
 
     setModeLoaded(false);
-    fetch("/api/mode/interval")
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch mode Intervals");
-        return res.json();
-      })
-      .then((data) => {
-        const modeIntervals = data;
-        const activeModeIntervals = modeIntervals[activeMode];
-        if (activeModeIntervals !== undefined) {
-          setModeInterval(activeModeIntervals);
+
+    const url = `/api/mode/interval/stream?mode=${encodeURIComponent(activeMode)}`;
+    const eventSource = new EventSource(url);
+
+    const handleEvent = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+
+        if (data?.intervals !== undefined && data?.intervals !== null) {
+          setModeInterval(data.intervals);
+          setModeLoaded(true);
         }
-        setModeLoaded(true);
-      })
-      .catch((err) => {
-        console.error("API Error:", err);
-        setModeLoaded(true);
-      });
+      } catch (err) {
+        console.error("Failed to parse mode interval stream event:", err);
+      }
+    };
+
+    eventSource.onmessage = handleEvent;
+
+    eventSource.onerror = (err) => {
+      console.error("Mode interval stream error:", err);
+    };
+
+    // Cleanup runs when activeMode changes AND when the component unmounts.
+    return () => {
+      eventSource.close();
+    };
   }, [activeMode]);
 
   const saveInterval = (newValue) => {
@@ -86,9 +90,9 @@ export function ModeIntervalsControls({ isDarkMode, mode }) {
 
     timeoutRefs.current[activeMode] = setTimeout(async () => {
       try {
-        await fetch('/api/mode/interval', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        await fetch("/api/mode/interval", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ mode: activeMode, value: newValue }),
         });
       } catch (err) {
@@ -130,7 +134,7 @@ export function ModeIntervalsControls({ isDarkMode, mode }) {
         : "#e2e8f0";
 
   if (activeMode == "SOLID") {
-      return html``;
+    return html``;
   }
 
   if (loading || !modeLoaded) {
@@ -210,7 +214,7 @@ export function ModeIntervalsControls({ isDarkMode, mode }) {
                     color: ${subtextColor};
                   "
         >
-          Adjust the interval settings to desired speeds. ${modeInterval}
+          Adjust the interval settings to desired speeds.
         </div>
 
         <!-- Custom Glow Slider -->
