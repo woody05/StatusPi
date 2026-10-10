@@ -98,7 +98,7 @@ class StatusManager:
     def _stop_status_mode_task(self):
         if self.status_mode_task_thread and self.status_mode_task_thread.is_alive():
             self.status_mode_task_stop_event.set()
-            #self.status_mode_task_thread.join()
+            self.status_mode_task_thread.join()
 
     def status_mode_background_task(self, action):
         while not self.status_mode_task_stop_event.is_set():
@@ -215,10 +215,18 @@ class StatusManager:
         try:
             if self.rpi_ws281x_manager:
                 self.rpi_ws281x_manager.set_color(BLANK_COLOR)
+
+                if self.debug:
+                    print(f"Flashing mode: LED OFF for {self.flashing_intervals} seconds")
+
             time.sleep(self.flashing_intervals)
 
             if self.rpi_ws281x_manager:
                 self.rpi_ws281x_manager.set_color(self._get_current_status_color())
+
+                if self.debug:
+                    print(f"Flashing mode: LED On for {self.flashing_intervals} seconds")
+
             time.sleep(self.flashing_intervals)
 
         except Exception as e:
@@ -232,11 +240,15 @@ class StatusManager:
             for i in range(9):
                 if self.rpi_ws281x_manager:
                     self.rpi_ws281x_manager.set_status_wave(current_color, i)
+                    if self.debug:
+                        print(f"Wave mode: LED On for {self.wave_intervals} seconds")
                 time.sleep(self.wave_intervals)
 
             for i in range(9):
                 if self.rpi_ws281x_manager:
                     self.rpi_ws281x_manager.set_status_wave(BLANK_COLOR, i)
+                    if self.debug:
+                        print(f"Wave mode: LED Off for {self.wave_intervals} seconds")
                 time.sleep(self.wave_intervals)
 
         except Exception as e:
@@ -253,6 +265,9 @@ class StatusManager:
 
             if self.rpi_ws281x_manager:
                 self.rpi_ws281x_manager.set_color_single_index(color, random_led_index)
+                if self.debug:
+                    state = "On" if turn_led_on else "Off"
+                    print(f"Scatter mode: LED {state} at index {random_led_index} for {self.scatter_intervals} seconds")
             time.sleep(self.scatter_intervals)
 
         except Exception as e:
@@ -264,7 +279,7 @@ class StatusManager:
         try:
             if self.rpi_ws281x_manager:
                 self.rpi_ws281x_manager.set_color(self._get_current_status_color())
-            self._stop_status_mode_task()
+            #self._stop_status_mode_task()
         except Exception as e:
             if self.logger:
                 self.logger.error(f"Error in solid mode: {e}")
